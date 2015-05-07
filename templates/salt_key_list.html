@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}认证信息-移动终端自动化运维平台{% endblock %}
+{% block nav %}
+    <li class="active"><a href="{% url 'key_list' %}">认证信息</a></li>
+    <li><a href="{% url 'module_deploy' %}">模块部署</a></li>
+    <li><a href="{% url 'module_update' %}">模块更新</a></li>
+    <li><a href="{% url 'remote_execution' %}">远程操作</a></li>
+    <li><a href="{% url 'host_list' %}">主机列表</a></li>
+{% endblock %}
+{% block content %}
+    <div class="container theme-showcase" role="main">
+
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="row">
+            <div class="col-md-12">
+                 <div class="panel panel-default">
+                      <div class="panel-body">
+                           <h3>
+                            <span class="label label-primary">未允许的key</span>
+                           </h3>
+                           <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                               <tbody>
+                               {% for each_pre in all_minions_pre %}
+                                   <td>{{ each_pre }}</td>
+                                   <td width="180"><a href="/common/key/accept/?node_name={{ each_pre }}" class="btn btn-sm btn-warning">允许</a></td
+>
+                               {% endfor %}
+                               </tbody>
+                           </table>
+                           <h3>
+                            <span class="label label-success">已管理的key</span>
+                           </h3>
+                           <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                               <tbody>
+                               {% for each_minion in all_minions %}
+                                  <tr>
+                                   <td>{{ each_minion }}</td>
+                                   <td width="180"><a href="/common/key/delete/?node_name={{ each_minion }}" class="btn btn-sm btn-danger">删除</a></td> 
+                                  </tr>
+                               {% endfor %}
+                               </tbody>
+                           </table>
+                           <div class="row">
+                                 <div class="col-xs-6">
+                                       <div class="dataTables_info" id="example_info" role="alert" aria-live="polite" aria-relevant="all"></div>
+                                 </div>
+                                 <div class="col-xs-6">
+                                      <div class="dataTables_paginate paging_simple_numbers" id="exmaple_paginate">
+                                      </div>
+                                 </div>
+                           </div> <!--row end-->
+                         </div>
+                     </div>
+                 </div>
+             </div>
+
+    </div> <!-- /container -->
+{% endblock %}
