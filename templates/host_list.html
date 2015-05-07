@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}主机列表-移动终端自动化运维平台{% endblock %}
+{% block nav %}
+    <li><a href="{% url 'key_list' %}">认证信息</a></li>
+    <li><a href="{% url 'module_deploy' %}">模块部署</a></li>
+    <li><a href="{% url 'module_update' %}">模块更新</a></li>
+    <li><a href="{% url 'remote_execution' %}">远程操作</a></li>
+    <li class="active"><a href="{% url 'host_list' %}">主机列表</a></li>
+{% endblock %}
+{% block content %}
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+             <div class="row">
+            <div class="col-md-12">
+                 <div class="panel panel-default">
+                      <div class="panel-body">
+                           {% if all_host_list %}
+                           <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                               <thead>
+                                   <tr>
+                                      <th>ID</th>
+                                      <th>主机名</th>
+                                      <th>IP地址</th>
+                                      <th>MAC地址</th>
+                                      <th>主行情源</th>
+                                      <th>备行情源</th>
+                                      <th>授权日期</th>
+                                      <th>授权状态</th>
+<!--
+                                      <th>内存</th>
+                                      <th>CPU数目</th>
+                                      <th>CPU核数</th>
+                                      <th>CPU型号</th>
+                                      <th>操作系统</th>
+-->
+                                      <th>备注</th>
+                                      <th>操作</th>
+                                   </tr>
+                               </thead>
+                               
+                               <tbody>
+                               {% for all_host in all_host_list %}
+                                   <tr>
+                                      <td>{{ forloop.counter }}</td>
+                                      <td>{{ all_host.hostname }}</td>
+                                      <td>{{ all_host.ip }}</td>
+                                      <td>{{ all_host.macaddr }}</td>
+                                      <td>{{ all_host.zsourceip }}</td>
+                                      <td>{{ all_host.bsourceip }}</td>
+                                      <td>{{ all_host.licdate }}</td>
+                                      <td>{{ all_host.licstatus }}</td>
+                                      <td>{{ all_host.remark }}</td>
+                                      <td><a href="{% url 'host_manage' id=all_host.id %}" class="btn btn-info btn-sm">编辑</a> 
+<!--
+                                          <a href="/asset/delete_host/?id={{ all_host.id }}&delete=1" style="color:white" class="btn btn-danger btn-sm" role="button">删除</a>
+-->
+                                          <a href="/hostlist/delete/?id={{ all_host.id }}&delete=1" class="btn btn-danger btn-sm" role="button">删除</a>
+                                      </td>
+                                   </tr>
+                               {% endfor %}
+                               </tbody>
+                            </table>
+                           {% endif %}
+                            <div class="row">
+                                 <!--div class="col-md-6">
+                                       <div class="dataTables_info" id="example_info" role="alert" aria-live="polite" aria-relevant="all"></div>
+                                 </div-->
+                                 <div class="col-md-offset-10 col-md-12"> 
+                                      <div class="dataTables_paginate paging_simple_numbers" id="exmaple_paginate">
+                                           <a href="{% url 'host_add' %}" class="btn btn-info btn-sm" role="button">添加</a>
+                                           {% if all_host_list.has_previous %}
+                                                <a href="?page={{ all_host_list.previous_page_number }}">上一页</a>
+                                           {% endif %}
+                                           <span class="current">
+                                                第{{ all_host_list.number }}页，共{{ all_host_list.paginator.num_pages }}页
+                                           </span> 
+                                           {% if all_host_list.has_next %}
+                                                <a href="?page={{ all_host_list.next_page_number }}">下一页</a>
+                                           {% endif %}
+                                      </div>
+                                 </div>
+                           </div> <!--row end-->
+                         </div>
+                     </div>
+                 </div>
+             </div>
+        <!--row end-->
+{% endblock %}
