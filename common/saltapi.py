@@ -35,7 +35,7 @@ class SaltAPI(object):
     def list_all_key(self):
         params = {'client': 'wheel', 'fun': 'key.list_all'}
         obj = urllib.urlencode(params)
-        self.salt_login()
+        #self.salt_login()
         content = self.postRequest(obj)
         minions = content['return'][0]['data']['return']['minions']
         minions_pre = content['return'][0]['data']['return']['minions_pre']
@@ -44,7 +44,7 @@ class SaltAPI(object):
     def delete_key(self,node_name):
         params = {'client': 'wheel', 'fun': 'key.delete', 'match': node_name}
         obj = urllib.urlencode(params)
-        self.salt_login()
+        #self.salt_login()
         content = self.postRequest(obj)
         ret = content['return'][0]['data']['success']
         return ret
@@ -52,7 +52,7 @@ class SaltAPI(object):
     def accept_key(self,node_name):
         params = {'client': 'wheel', 'fun': 'key.accept', 'match': node_name}
         obj = urllib.urlencode(params)
-        self.salt_login()
+        #self.salt_login()
         content = self.postRequest(obj)
         ret = content['return'][0]['data']['success']
         return ret
@@ -61,7 +61,7 @@ class SaltAPI(object):
         ''' Execute commands without parameters '''
         params = {'client': 'local', 'tgt': tgt, 'fun': fun}
         obj = urllib.urlencode(params)
-        self.salt_login()
+        #self.salt_login()
         content = self.postRequest(obj)
         ret = content['return'][0][tgt]
         return ret
@@ -71,7 +71,7 @@ class SaltAPI(object):
         params = {'client': 'local', 'tgt': tgt, 'fun': fun, 'arg': arg}
         obj = urllib.urlencode(params)
         #obj, number = re.subn("arg\d", 'arg', obj)
-        self.salt_login()
+        #self.salt_login()
         content = self.postRequest(obj)
         ret = content['return'][0]
         return ret
@@ -80,7 +80,7 @@ class SaltAPI(object):
         ''' Use targeting for remote execution '''
         params = {'client': 'local', 'tgt': tgt, 'fun': fun, 'arg': arg, 'expr_form': 'nodegroup'}
         obj = urllib.urlencode(params)
-        self.salt_login()
+        #self.salt_login()
         content = self.postRequest(obj)
         jid = content['return'][0]['jid']
         return jid
@@ -89,7 +89,7 @@ class SaltAPI(object):
         ''' Module deployment '''
         params = {'client': 'local', 'tgt': tgt, 'fun': 'state.sls', 'arg': arg}
         obj = urllib.urlencode(params)
-        self.salt_login()
+        #self.salt_login()
         content = self.postRequest(obj)
         return content
 
@@ -97,7 +97,7 @@ class SaltAPI(object):
         ''' Asynchronously send a command to connected minions '''
         params = {'client': 'local_async', 'tgt': tgt, 'fun': 'state.sls', 'arg': arg}
         obj = urllib.urlencode(params)
-        self.salt_login()
+        #self.salt_login()
         content = self.postRequest(obj)
         jid = content['return'][0]['jid']
         return jid
@@ -106,7 +106,7 @@ class SaltAPI(object):
         ''' Based on the node group forms deployment '''
         params = {'client': 'local_async', 'tgt': tgt, 'fun': 'state.sls', 'arg': arg, 'expr_form': 'nodegroup'}
         obj = urllib.urlencode(params)
-        self.salt_login()
+        #self.salt_login()
         content = self.postRequest(obj)
         jid = content['return'][0]['jid']
         return jid 
@@ -118,13 +118,14 @@ class SaltAPI(object):
  
 def main():
     #以下是用来测试saltAPI类的部分
-    sapi = saltAPI()
-    params = {'client':'local', 'fun':'test.ping', 'tgt':'*'}
+    #sapi = saltAPI()
+    #params = {'client':'local', 'fun':'test.ping', 'tgt':'*'}
     #params = {'client':'local', 'fun':'test.ping', 'tgt':'某台服务器的key'}
     #params = {'client':'local', 'fun':'test.echo', 'tgt':'某台服务器的key', 'arg1':'hello'}
     #params = {'client':'local', 'fun':'test.ping', 'tgt':'某组服务器的组名', 'expr_form':'nodegroup'}
-    test = sapi.saltCmd(params)
-    print test
+    #test = sapi.saltCmd(params)
+    #print test
+    pass
  
 if __name__ == '__main__':
     main()

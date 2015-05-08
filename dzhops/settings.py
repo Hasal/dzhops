@@ -101,10 +101,15 @@ SALT_API = {"url": "http://127.0.0.1:18000/",
             }
 
 # salt result
-RETURNS_MYSQL = {"host": "127.0.0.1",
-               "port": 3306,
-               "database": "salt",
-               "user": "micro",
-               "password": "blog"
-                }
 
+RETURNS_MYSQL = {
+    'default': 
+    {
+        'ENGINE': '',
+        'NAME': 'salt',
+        'USER': 'micro',
+        'PORT': 3306,
+        'HOST': '127.0.0.1',
+        'PASSWORD': 'blog',
+    }
+}
