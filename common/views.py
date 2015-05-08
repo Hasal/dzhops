@@ -41,7 +41,6 @@ def salt_accept_key(request):
     node_name = request.GET.get('node_name')
     sapi = SaltAPI(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])  
     ret = sapi.accept_key(node_name)
-    Message.objects.create(type='salt', action='key', action_ip=node_name, content='saltstack accept node key')
     return HttpResponseRedirect(reverse('key_list')) 
 
 def salt_delete_key(request):
@@ -52,7 +51,6 @@ def salt_delete_key(request):
     node_name = request.GET.get('node_name')
     sapi = SaltAPI(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])  
     ret = sapi.delete_key(node_name)
-    Message.objects.create(type='salt', action='key', action_ip=node_name, content='saltstack delete node key')
     return HttpResponseRedirect(reverse('key_list'))
 
 def module_deploy(request):
@@ -102,9 +100,9 @@ def module_update(request):
         if action == 'deploy':
             tgt = request.POST.get('tgt')
             arg = request.POST.getlist('module')
-            tgtcheck = HostList.objects.filter(hostname=tgt)
+#            tgtcheck = HostList.objects.filter(hostname=tgt)
         if True:
-            Message.objects.create(type='salt', action='deploy', action_ip=tgt, content='saltstack %s module deploy' % (arg))
+#            Message.objects.create(type='salt', action='deploy', action_ip=tgt, content='saltstack %s module deploy' % (arg))
             #sapi = SaltAPI(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])  
             sapi = SaltAPI(url='http://127.0.0.1:18000/',username='zhaogb',password='dzhinternet')
             for i in arg:
@@ -130,25 +128,25 @@ def remote_execution(request):
 
     ret = ''
     tgtcheck = ''
-    danger = ('rm','reboot','init ','shutdown')
+#    danger = ('rm','reboot','init ','shutdown')
     #user = request.user
     if request.method == 'POST':
         action = request.get_full_path().split('=')[1]
         if action == 'exec':
             tgt = request.POST.get('tgt')
             arg = request.POST.get('arg')    
-            tgtcheck = HostList.objects.filter(hostname=tgt)
-            argcheck = arg not in danger
+#            tgtcheck = HostList.objects.filter(hostname=tgt)
+#            argcheck = arg not in danger
             #if tgtcheck and argcheck:
             if True:
                 sapi = SaltAPI(url='http://127.0.0.1:18000/',username='zhaogb',password='dzhinternet')
                 #sapi = SaltAPI(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])
                 ret = sapi.remote_execution(tgt,'cmd.run',arg)
-            elif not tgtcheck:
-                ret = '亲，目标主机不正确，请重新输入'     
-            elif not argcheck:
-                ret = '亲，命令很危险, 你这样子老大会不开森'
-        Message.objects.create(type='salt', action='execution', action_ip=tgt, content='saltstack execution command: %s ' % (arg))
+#            elif not tgtcheck:
+#                ret = '亲，目标主机不正确，请重新输入'     
+#            elif not argcheck:
+#                ret = '亲，命令很危险, 你这样子老大会不开森'
+#        Message.objects.create(type='salt', action='execution', action_ip=tgt, content='saltstack execution command: %s ' % (arg))
          
     return render_to_response('salt_remote_execution.html',
            {'ret': ret},context_instance=RequestContext(request)) 
