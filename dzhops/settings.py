@@ -110,6 +110,12 @@ RETURNS_MYSQL = {
         'USER': 'micro',
         'PORT': 3306,
         'HOST': '127.0.0.1',
-        'PASSWORD': 'blog',
+        'PASSWORD': 'blog'
     }
 }
+# salt-api setting
+SALT_API = {
+        'url' : 'http://127.0.0.1:18000/',
+        'user' : 'zhaogb',
+        'password' : 'dzhinternet'
+        }
