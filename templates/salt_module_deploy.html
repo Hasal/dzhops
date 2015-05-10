@@ -57,7 +57,31 @@
                                     <div class="form-group">
                                           <label class="col-md-1 control-label">返回结果</label>
                                           <div class="col-md-11">
-                                               <textarea class="form-control" rows="30">{{ ret }}</textarea>
+                                                {% for each_ret in ret %}
+                                                <!-- Button trigger modal -->
+                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+                                                    {{ each_ret }}
+                                                </button>
+
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                  <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                      <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                        <h4 class="modal-title" id="myModalLabel">{{ each_ret }}</h4>
+                                                      </div>
+                                                      <div class="modal-body">
+                                                        ...
+                                                      </div>
+                                                      <div class="modal-footer">
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                                {% endfor %}
+                                               <!--textarea class="form-control" rows="30">{{ ret }}</textarea-->
                                           </div>
                                     </div>
                              </form>

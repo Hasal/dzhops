@@ -58,7 +58,7 @@ def module_deploy(request):
     deploy (nginx/php/mysql..etc) module
     """
 
-    ret = [] 
+    tret = [] 
     jid = []
     if request.method == 'POST':
         action = request.get_full_path().split('=')[1]
@@ -74,14 +74,21 @@ def module_deploy(request):
                 db = db_operate()
                 for i in jid:
                     time.sleep(10)
-                    sql = 'select `return` from salt_returns where jid=%s'
+                    #sql = 'select id,`return` from salt_returns where jid=%s'
+                    sql = 'select id from salt_returns where jid=%s'
                     result = db.select_table(settings.RETURNS_MYSQL,sql,str(i))    #通过jid获取执行结果        
-                    ret.append(result)
+                    tret.append(result)
             else:
-                ret = '请选择将要部署的模块！'
+                noModel = ['请选择将要部署的模块！']
+                tret.append(noModel)
         else:
-           ret = '亲，没有指定目标主机，请重新输入！'   
-
+            noHost = ['亲，没有指定目标主机，请重新输入！']
+            tret.append(noHost)
+    if tret:
+        ret = tret[0]
+    else:
+        ret = ['没有返回任何结果！']
+            
     return render_to_response('salt_module_deploy.html', 
            {'ret': ret},context_instance=RequestContext(request)) 
 
