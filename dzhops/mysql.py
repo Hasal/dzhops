@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import MySQLdb
+import json
 import settings
 
 class db_operate:
@@ -25,10 +26,11 @@ class db_operate:
             cursor = conn.cursor()
             n = cursor.execute(sql_cmd,parmas)
             for row in cursor.fetchall():
-                unret[row[0]] = row[1]
+                val = json.loads(row[1])
+                unret[row[0]] = val
                 ret.update(unret)
         except MySQLdb.Error,e:
-            ret.undate(e)
+            unret['MysqlErro'] = e
+            ret.undate(unret)
 
         return ret
-

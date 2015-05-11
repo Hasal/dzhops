@@ -17,10 +17,10 @@ import re
 import json
 
 # Import salt libs
-import salt.utils
-import salt.output
-from salt._compat import string_types
-import salt
+#import salt.utils
+#import salt.output
+#from salt._compat import string_types
+#import salt
 
 def salt_key_list(request):
     """
@@ -60,6 +60,7 @@ def module_deploy(request):
 
     ret = {}
     unret = {}
+    jid = []
     if request.method == 'POST':
         action = request.get_full_path().split('=')[1]
         if action == 'deploy':
@@ -69,20 +70,24 @@ def module_deploy(request):
                 if arg:
                     if len(arg) < 2:
                         sapi = SaltAPI(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])  
-                        jid = sapi.async_deploy(tgt,arg[0])
+                        for i in arg:
+                            obj = sapi.async_deploy(tgt,i)
+                            jid.append(obj)
                         db = db_operate()
-                        sql = 'select id,`return` from salt_returns where jid=%s'
-                        unret = db.select_table(settings.RETURNS_MYSQL,sql,str(jid[0]))    #通过jid获取执行结果   
+                        for i in jid:
+                            time.sleep(30)
+                            sql = 'select id,`return` from salt_returns where jid=%s'
+                            unret = db.select_table(settings.RETURNS_MYSQL,sql,str(i))
                     else:
-                        unret['亲，由于我比较菜，暂不支持同时部署多个模块！'] = '亲，由于我比较菜，暂不支持同时部署多个模块！'
+                        unret['亲，Salt Stack不支持同时执行多个模板'] = '虽然我很菜，但这个不是我的问题，Salt Stack不支持同时执行多个模板。不过我正在尝试通过异步处理来支持同时部署多个模块！'
                 else:
-                    unret['请选择将要部署的模块！'] = '请选择将要部署的模块！'
+                    unret['请选择将要部署的模块'] = '亲，为何不选择一个模块试试呢！'
             else:
-                unret['亲，没有指定目标主机，请重新输入！'] = '亲，没有指定目标主机，请重新输入！'
-    if ret:
+                unret['亲，没有指定目标主机'] = '友情提示，你木有指定目标主机！'
+    if unret:
         ret = unret
     else:
-        ret['没有返回任何结果！'] = '没有返回任何结果！'
+        ret['没有返回任何结果'] = '骚年，你不相信我，就算点开看，也还是没有返回结果！'
             
     return render_to_response('salt_module_deploy.html', 
            {'ret': ret},context_instance=RequestContext(request)) 
@@ -92,25 +97,36 @@ def module_update(request):
     update (mobile/class/prog..etc) module
     """
 
+    ret = {}
+    unret = {}
+    jid = []
     if request.method == 'POST':
         action = request.get_full_path().split('=')[1]
-        if action == 'deploy':
+        if action == 'update':
             tgt = request.POST.get('tgt')
             arg = request.POST.getlist('module')
-        if tgt:
-            if arg:
-                if len(arg) < 2:
-                    sapi = SaltAPI(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])  
-                    jid = sapi.async_deploy(tgt,arg)
-                    db = db_operate()
-                    sql = 'select `return` from salt_returns where jid=%s'
-                    ret = db.select_table(settings.RETURNS_MYSQL,sql,str(i))    #通过jid获取执行结果
+            if tgt:
+                if arg:
+                    if len(arg) < 2:
+                        sapi = SaltAPI(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])  
+                        for i in arg:
+                            obj = sapi.async_deploy(tgt,i)
+                            jid.append(obj)
+                        db = db_operate()
+                        for i in jid:
+                            time.sleep(30)
+                            sql = 'select id,`return` from salt_returns where jid=%s'
+                            unret = db.select_table(settings.RETURNS_MYSQL,sql,str(i))
+                    else:
+                        unret['亲，Salt Stack不支持同时执行多个模板'] = '虽然我很菜，但这个不是我的问题，Salt Stack不支持同时执行多个模板。不过我正在尝试通过异步处理来支持同时部署多个模块！'
                 else:
-                    ret['亲，由于我比较菜，暂不支持同时部署多个模块！'] = '亲，由于我比较菜，暂不支持同时部署多个模块！'
+                    unret['请选择将要更新的模块'] = '亲，为何不选择一个模块试试呢！'
             else:
-                ret['请选择将要更新的模块！'] = '请选择将要更新的模块！'
-        else:
-           ret['亲，没有指定目标主机，请重新输入！'] = '亲，没有指定目标主机，请重新输入！'   
+                unret['亲，没有指定目标主机'] = '友情提示，你木有指定目标主机！'
+    if unret:
+        ret = unret
+    else:
+        ret['没有返回任何结果'] = '骚年，你不相信我，就算点开看，也还是没有返回结果！'
 
     return render_to_response('salt_module_update.html', 
            {'ret': ret},context_instance=RequestContext(request)) 
