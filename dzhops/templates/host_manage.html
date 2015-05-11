@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}主机管理-移动终端自动化运维平台{% endblock %}
+{% block nav %}
+    <li><a href="{% url 'key_list' %}">认证信息</a></li>
+    <li><a href="{% url 'module_deploy' %}">模块部署</a></li>
+    <li><a href="{% url 'module_update' %}">模块更新</a></li>
+    <li><a href="{% url 'remote_execution' %}">远程操作</a></li>
+    <li class="active"><a href="{% url 'host_list' %}">主机列表</a></li>
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <form class="form-horizontal form-border" id="form" method="post" action=".">
+                           {% csrf_token %}
+                           <div class="form-group">
+                                 <label class="col-md-3 control-label">主机名</label>
+                                 <div class="col-md-6">
+                                 {{ form.hostname }}
+                                 {{ form.hostname.errors }}
+                                 </div>
+                           </div>
+                           <div class="form-group">
+                                 <label class="col-sm-3 control-label">IP地址</label>
+                                 <div class="col-sm-6">
+                                 {{ form.ip }}
+                                 {{ form.ip.errors }}
+                                 </div>
+                            </div>
+                           <div class="form-group">
+                                 <label class="col-md-3 control-label">MAC地址</label>
+                                 <div class="col-md-6">
+                                 {{ form.macaddr }}
+                                 {{ form.macaddr.errors }}
+                                 </div>
+                            </div>
+                            <div class="form-group">
+                                 <label class="col-sm-3 control-label">主行情源</label>
+                                 <div class="col-sm-6">
+                                 {{ form.zsourceip }}
+                                 {{ form.zsourceip.errors }}
+                                 </div>
+                            </div>
+                            <div class="form-group">
+                                 <label class="col-sm-3 control-label">备行情源</label>
+                                 <div class="col-sm-6">
+                                 {{ form.bsourceip }}
+                                 {{ form.bsourceip.errors }}
+                                 </div>
+                            </div>
+                            <div class="form-group">
+                                 <label class="col-sm-3 control-label">授权日期</label>
+                                 <div class="col-sm-6">
+                                 {{ form.licdate }}
+                                 {{ form.licdate.errors }}
+                                 </div>
+                            </div>
+                            <div class="form-group">
+                                 <label class="col-sm-3 control-label">授权状态</label>
+                                 <div class="col-sm-6">
+                                 {{ form.licstatus }}
+                                 {{ form.licstatus.errors }}
+                                 </div>
+                            </div>
+                            <div class="form-group">
+                                 <label class="col-sm-3 control-label">备注</label>
+                                 <div class="col-sm-6">
+                                 {{ form.remark }}
+                                 {{ form.remark.errors }}
+                                  </div>
+                             </div> 
+                             <div class="col-sm-offset-8 col-sm-10">
+                                 {% ifequal action 'add' %}
+                                 <button type="submit" class="btn btn-primary">添加</button>
+                                 {% endifequal %}
+                                 {% ifequal action 'edit' %}
+                                 <button type="submit" class="btn btn-primary" name="operate" value="update">更新</button>
+                                 {% endifequal %}
+                            </div>
+                    </form>
+
+                </div> <!-- panel body -->
+            </div> <!-- panel end -->
+        </div> <!-- col end -->
+    </div> <!-- row end -->
+{% endblock %}

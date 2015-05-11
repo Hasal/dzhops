@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}模块更新-移动终端自动化运维平台{% endblock %}
+{% block nav %}
+    <li><a href="{% url 'key_list' %}">认证信息</a></li>
+    <li><a href="{% url 'module_deploy' %}">模块部署</a></li>
+    <li class="active"><a href="{% url 'module_update' %}">模块更新</a></li>
+    <li><a href="{% url 'remote_execution' %}">远程操作</a></li>
+    <li><a href="{% url 'host_list' %}">主机列表</a></li>
+{% endblock %}
+{% block content %}
+    <div class="container theme-showcase" role="main">
+
+       <div class="row">
+            <div class="col-md-12">
+                 <div class="panel panel-default">
+                      <div class="panel-body">
+                             <form class="form-horizontal form-border" method="post" enctype="multipart/form-data" action="/common/module/update/?action=deploy">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <label class="col-sm-1 control-label">目标主机</label>
+                                        <div class="col-sm-11">
+                                            <input type="text" class="form-control" name="tgt" value={{ tgt }}>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                          <label class="col-sm-1 control-label">更新模块</label>
+                                          <div class="col-sm-11">
+                                               <label class="checkbox-inline">
+                                                  <input class="icheck" type="checkbox"  value="update_conf.mobilect25" name="module">行情配置</label>
+                                           <label class="checkbox-inline">
+                                                   <input class="icheck" type="checkbox" value="update_prog.mobile" name="module">行情程序</label>
+                                               <label class="checkbox-inline">
+                                                   <input class="icheck" type="checkbox" value="update_prog.lic" name="module">授权文件</label>
+                                               <label class="checkbox-inline">
+                                                   <input class="icheck" type="checkbox" value="update_conf.class" name="module">class文件</label>
+                                               <label class="checkbox-inline">
+                                                   <input class="icheck" type="checkbox" value="utils.clearlog" name="module">日志清理</label>
+                                          </div>
+                                    </div>
+                                    <div class="form-group">
+                                         <input type="hidden" name="mod" value={{ module }}>
+                                         <div class="col-sm-offset-11 col-sm-12">
+                                              <button type="submit" class="btn btn-primary">提交</button>
+                                         </div>
+                                    </div>
+                                    <div class="form-group">
+                                          <label class="col-sm-1 control-label">返回结果</label>
+                                          <div class="col-sm-11">
+                                               <textarea class="form-control" rows="30">{{ ret }}</textarea>
+                                          </div>
+                                    </div>
+                             </form>
+                      </div>
+                 </div>
+            </div>
+       </div>
+       <!--row end-->
+
+
+    </div> <!-- /container -->
+{% endblock %}
