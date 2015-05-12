@@ -19,6 +19,9 @@ class db_operate:
         return ret
 
     def select_table(self,conn,sql_cmd,parmas):
+        '''
+        out(type:dict)  {'host1':{'dict_content'},'host2':{'dict_content'},...}
+        '''
         try:
             unret = {}
             ret = {}

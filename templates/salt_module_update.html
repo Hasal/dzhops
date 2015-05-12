@@ -48,8 +48,12 @@
                                           <div class="col-sm-11">
                                               {% for each_ret,each_val in ret.items %}
                                               <!-- Button trigger modal -->
-                                              <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal">
-                                                  {{ each_ret }}
+                                             	{% if each_val.status == 'True' %}
+													<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">
+												{% else %}
+													<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal">
+												{% endif %}
+													{{ each_ret }}
                                               </button>
 
                                               <!-- Modal -->
@@ -61,7 +65,7 @@
                                                       <h4 class="modal-title" id="myModalLabel">{{ each_ret }}</h4>
                                                     </div>
                                                     <div class="modal-body">
-                                                      {{ each_val }} 
+                                                      {{ each_val.cont }} 
                                                     </div>
                                                     <div class="modal-footer">
                                                       <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>

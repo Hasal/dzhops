@@ -8,4 +8,6 @@ def index(request):
     return render_to_response('index.html')
 
 def login(request):
-    return render_to_response('login.html')
+    ret = '1243'
+    status = 'False'
+    return render_to_response('login.html',{'ret': ret, 'status': status })
