@@ -69,16 +69,16 @@
                                                 {% for each_ret,each_val in ret.items %}
                                                 <!-- Button trigger modal -->
 												{% if each_val.status == 'True' %}
-													<button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">
+													<button type="button" class="btn btn-info" data-toggle="modal" data-target="#{{ each_ret }}">
 												{% else %}
-													<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal">
+													<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#{{ each_ret }}">
 												{% endif %}
 
 														{{ each_ret }}
 													</button>
 
                                                 <!-- Modal -->
-                                                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                <div class="modal fade" id="{{ each_ret }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                                                   <div class="modal-dialog">
                                                     <div class="modal-content">
                                                       <div class="modal-header">

@@ -21,7 +21,6 @@
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
     <script type="text/javascript" async="" src="./static/otherjs/ga.js"></script><script type="text/javascript" charset="UTF-8" src="./static/otherjs/cloud.js"></script><script src="./static/otherjs/ie-emulation-modes-warning.js"></script>
-
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -67,57 +66,37 @@
     </nav>
 
     <div class="container theme-showcase" role="main">
-		{{ ret }}		
+		<div>{{ ret }}</div>		
+<div>
+            {% for each_ret,each_val in ret.items %}
+            <!-- Button trigger modal -->
+            {% if each_val.status == 'True' %}
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#{{ each_ret }}">
+            {% else %}
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#{{ each_ret }}">
+            {% endif %}
+                    {{ each_ret }}
+                </button>
 
-											<div>
-                                                <!-- Button trigger modal -->
-													<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal">
-                                                       zhaogb-201
-													</button>
-
-                                                <!-- Modal -->
-                                                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                                  <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                      <div class="modal-header">
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                                        <h4 class="modal-title" id="myModalLabel"> zhaogb-201</h4>
-                                                      </div>
-                                                      <div class="modal-body">
-                                                         zhaogb-201
-                                                      </div>
-                                                      <div class="modal-footer">
-                                                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                </div>
-											</div>
-                                            
-											<div>
-                                                <!-- Button trigger modal -->
-													<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal">
-                                                       zhaogb-202
-													</button>
-
-                                                <!-- Modal -->
-                                                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                                  <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                      <div class="modal-header">
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                                        <h4 class="modal-title" id="myModalLabel"> zhaogb-202</h4>
-                                                      </div>
-                                                      <div class="modal-body">
-                                                         zhaogb-202
-                                                      </div>
-                                                      <div class="modal-footer">
-                                                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                </div>
-											</div>
+            <!-- Modal -->
+            <div class="modal fade" id="{{ each_ret }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">{{ each_ret }}</h4>
+                  </div>
+                  <div class="modal-body">
+                    {{ each_val.cont }} 
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+</div>                                            
 
       <!-- Main jumbotron for a primary marketing message or call to action -->
       <div class="jumbotron">
