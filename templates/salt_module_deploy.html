@@ -57,6 +57,15 @@
                                     <div class="form-group">
                                           <label class="col-md-1 control-label">返回结果</label>
                                           <div class="col-md-11">
+
+                                              {% if hostsft %}
+                                                <div class="alert alert-success" role="alert">
+                                                  <strong>
+                                                    本次执行对象共{{ hostsft.sum }}台，其中{{ hostsft.rsum }}台返回结果：成功{{hostsft.tr}}台，失败{{hostsft.fa}}台；未返回结果的有以下{{hostsft.unre}}台：{{ hostsft.unrestr }}
+                                                  </strong> 
+                                                </div>
+                                              {% endif %}
+
                                                 {% for each_ret,each_val in ret.items %}
                                                 <!-- Button trigger modal -->
 												{% if each_val.status == 'True' %}
@@ -64,8 +73,9 @@
 												{% else %}
 													<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal">
 												{% endif %}
-                                                    {{ each_ret }}
-                                                </button>
+
+														{{ each_ret }}
+													</button>
 
                                                 <!-- Modal -->
                                                 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

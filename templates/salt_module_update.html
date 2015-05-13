@@ -46,6 +46,15 @@
                                     <div class="form-group">
                                           <label class="col-sm-1 control-label">返回结果</label>
                                           <div class="col-sm-11">
+
+                                              {% if hostsft %}
+                                                <div class="alert alert-success" role="alert">
+                                                  <strong>
+                                                    本次执行对象共{{ hostsft.sum }}台，其中{{ hostsft.rsum }}台返回结果：成功{{hostsft.tr}}台，失败{{hostsft.fa}}台；未返回结果的有以下{{hostsft.unre}}台：{{ hostsft.unrestr }}
+                                                  </strong> 
+                                                </div>
+                                              {% endif %}
+
                                               {% for each_ret,each_val in ret.items %}
                                               <!-- Button trigger modal -->
                                              	{% if each_val.status == 'True' %}
