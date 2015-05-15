@@ -31,7 +31,17 @@
                                     <div class="form-group">
                                          <div class="col-sm-offset-11 col-sm-12">
                                               <!--button type="submit" class="btn btn-primary">提交</button-->
-                                              <button type="submit" id='loading-example-btn' class="btn btn-primary" data-loading-text="..." autocomplete="off">提交</button>
+                                              <button type="submit" id="re_exec" data-loading-text="......." class="btn btn-primary" onclick="loag()" autocomplete="off">
+                                                提交
+                                              </button>
+                                              <script>
+                                                    function loag() {
+                                                        var btn = $("#re_exec");
+                                                        btn.button('loading');
+                                                        setTimeout(function () { btn.button('reset'); },36000000);
+                                                        // 36000000ms = 10h
+                                                    }
+                                              </script>
                                          </div>
                                     </div>
                                     <div class="form-group">

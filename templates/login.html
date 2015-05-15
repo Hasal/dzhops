@@ -65,39 +65,35 @@
       </div>
     </nav>
 
-    <div class="container theme-showcase" role="main">
-		<div>{{ ret }}</div>		
-<div>
-            {% for each_ret,each_val in ret.items %}
-            <!-- Button trigger modal -->
-            {% if each_val.status == 'True' %}
-                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#{{ each_ret }}">
-            {% else %}
-                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#{{ each_ret }}">
-            {% endif %}
-                    {{ each_ret }}
-                </button>
+    <div class="container theme-showcase" role="main">                                         
 
-            <!-- Modal -->
-            <div class="modal fade" id="{{ each_ret }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">{{ each_ret }}</h4>
-                  </div>
-                  <div class="modal-body">
-                    {{ each_val.cont }} 
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {% endfor %}
-</div>                                            
+    <div>
+        <!-- Button trigger modal -->
+    {% for k,v in ret.items %}                                            
+    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#{{ k }}">
+        {{ k }}
+    </button>
 
+    <!-- Modal -->
+    <div class="modal fade" id="{{ k }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">{{ k }}</h4>
+      </div>
+      <div class="modal-body">
+        {{ v }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+      </div>
+    </div>
+    </div>
+    </div>
+    {% endfor %}
+    </div>
+    
       <!-- Main jumbotron for a primary marketing message or call to action -->
       <div class="jumbotron">
         <h1>Theme example</h1>

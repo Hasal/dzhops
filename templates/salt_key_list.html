@@ -15,21 +15,21 @@
             <div class="col-md-12">
                  <div class="panel panel-default">
                       <div class="panel-body">
-							  <div class="alert alert-danger" role="alert">
-									<strong>未允许的key</strong>
-							  </div>
+                          <div class="alert alert-danger" role="alert">
+                                <strong>未允许的key</strong>
+                          </div>
                            <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
                                <tbody>
                                {% for each_pre in all_minions_pre %}
                                    <td>{{ each_pre }}</td>
-                                   <td width="180"><a href="/common/key/accept/?node_name={{ each_pre }}" class="btn btn-sm btn-warning">允许</a></td
->
+                                   <td width="180"><a href="/common/key/accept/?node_name={{ each_pre }}" class="btn btn-sm btn-warning">允许</a></td>
+                                    </tr>
                                {% endfor %}
                                </tbody>
-                           </table>
-						        <div class="alert alert-info" role="alert">
-									<strong>已管理的key</strong>
-								</div>
+						   </table>
+                        <div class="alert alert-info" role="alert">
+                            <strong>已管理的key</strong>
+                        </div>
                            <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
                                <tbody>
                                {% for each_minion in all_minions %}

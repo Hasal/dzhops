@@ -113,8 +113,12 @@ def module_deploy(request):
                                 returnset = set(result.keys())
 
                             for ka,va in result.iteritems():
+                                longstrva = ''
                                 for kva in va.keys():
+                                    liva = kva.split('_|-')
                                     liv.append(va[kva]['result'])
+                                    strva = '标签 : {0}\n结果 : {1}\n操作 : {2}\n开始 : {3}\n耗时 : {4} ms\n变动 : {5}\n{6}\n'.format(liva[1],va[kva]['result'],va[kva]['comment'],va[kva]['start_time'],va[kva]['duration'],va[kva]['changes'],'------------------------------------------------------------')
+                                    longstrva += strva
                                 if False in liv:
                                     colour = 'False'
                                     hostfa += 1
@@ -122,7 +126,7 @@ def module_deploy(request):
                                     colour = 'True'
                                     hosttr += 1
                                 valcon['status'] = colour
-                                valcon['cont'] = va
+                                valcon['cont'] = longstrva
                                 unret[ka] = valcon
                             if tgt == '*':
                                 hostsum = len(tgtminis)
