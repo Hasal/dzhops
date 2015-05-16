@@ -83,7 +83,7 @@ def module_deploy(request):
     valcon = {}
     hostsft = {}
     jid = []
-    liv = []
+    #liv = []
     objlist = []
     hostfa = 0
     hosttr = 0
@@ -109,22 +109,50 @@ def module_deploy(request):
                                 time.sleep(30)
                                 sql = 'select id,`return` from salt_returns where jid=%s'
                                 result = db.select_table(settings.RETURNS_MYSQL,sql,str(i))
+                                
+                                #result = {'zhaogb-201':{'file_|-info_so_1_|-/usr/lib64/libodbc.so.1_|-managed': {'comment': 'zhaogb-201', 'name': '/usr/lib64/libodbc.so.1', 'start_time': 'zhaogb-201', 'result': True, 'duration': 'zhaogb-201', '__run_num__': 2, 'changes': {}}},'zhaogb-202':{'file_|-info_so_1_|-/usr/lib64/libodbc.so.1_|-managed': {'comment': 'zhaogb-202', 'name': 'zhaogb-202', 'start_time': 'zhaogb-202', 'result': True, 'duration': 'zhaogb-202', '__run_num__': 2, 'changes': {'diff': 'New file', 'mode': '0644'}}}}
+                                
                                 hostrsum = len(result)
                                 returnset = set(result.keys())
 
                             for ka,va in result.iteritems():
+                                # result {'zhaogb-201':{},'zhaobg-202':{}}
+                                # ka zhaogb-201,zhaogb-202
+                                # va {'mo_watch':{'comment':'','result':'',...}}
+                                valcon = {}
                                 longstrva = ''
+                                falseStatus = 0
+                                trueStatus = 0
+                                liv = []
                                 for kva in va.keys():
+                                    # kva mo_watch,...
                                     liva = kva.split('_|-')
                                     liv.append(va[kva]['result'])
-                                    strva = '标签 : {0}\n结果 : {1}\n操作 : {2}\n开始 : {3}\n耗时 : {4} ms\n变动 : {5}\n{6}\n'.format(liva[1],va[kva]['result'],va[kva]['comment'],va[kva]['start_time'],va[kva]['duration'],va[kva]['changes'],'------------------------------------------------------------')
+                                    strva = '结果 : {0}\n标签 : {1}\n操作 : {2}\n开始 : {3}\n耗时 : {4} ms\n变动 : {5}\n{6}\n'.format(va[kva]['result'],liva[1],va[kva]['comment'],va[kva]['start_time'],va[kva]['duration'],va[kva]['changes'],'------------------------------------------------------------')
                                     longstrva += strva
+
                                 if False in liv:
                                     colour = 'False'
                                     hostfa += 1
-                                else:
+                                elif True in liv:
                                     colour = 'True'
                                     hosttr += 1
+                                else:
+                                    pass
+                                    # error write to logging
+                                    
+                                totalStatus = len(liv)
+                                for livStatus in liv:
+                                    if livStatus == False:
+                                        falseStatus += 1
+                                    elif livStatus == True:
+                                        trueStatus += 1
+                                    else:
+                                        pass
+                                        # error write to logging                                    
+                                
+                                longstrva += '失败 : {0}\n成功 : {1}\n总计 : {2}'.format(falseStatus, trueStatus, totalStatus)
+
                                 valcon['status'] = colour
                                 valcon['cont'] = longstrva
                                 unret[ka] = valcon
