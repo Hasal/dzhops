@@ -7,4 +7,5 @@
     salt-api 2014.7.0     
     Django 1.6.8     
     python 2.6     
-    MySQL 5.5    
+    MySQL 5.5  
+    

@@ -127,7 +127,31 @@ def module_deploy(request):
                                 for kva in va.keys():
                                     # kva mo_watch,...
                                     liva = kva.split('_|-')
-                                    liv.append(va[kva]['result'])
+                                    liv.append(va[kva]['result'])                                
+
+                                    if va[kva]['changes']:
+                                        changesStr = ''
+                                        if liva[0] == 'file':
+                                            if 'diff' in va[kva]['changes'].keys() and va[kva]['changes']['diff'] != '':
+                                                changesStr += '\n\t对比 : \n\t\t{0}'.format(va[kva]['changes']['diff'])
+                                            if 'mode' in va[kva]['changes'].keys() and va[kva]['changes']['mode'] != '':
+                                                changesStr += '\n\t权限 : {0}'.format(va[kva]['changes']['mode'])
+                                                #changesStr = '\n\t对比 : \n\t\t{0}\n\t权限 : {1}'.format(va[kva]['changes']['diff'],va[kva]['changes']['mode'])
+                                        elif liva[0] == 'cmd':
+                                            if 'pid' in va[kva]['changes'].keys() and va[kva]['changes']['pid'] != '':
+                                                changesStr += '\n\tPID : {0}'.format(va[kva]['changes']['pid'])
+                                            if 'retcode' in va[kva]['changes'].keys() and va[kva]['changes']['retcode'] != '':
+                                                changesStr += '\n\t返回代码 : {0}'.format(va[kva]['changes']['retcode'])
+                                            if 'stderr' in va[kva]['changes'].keys() and va[kva]['changes']['stderr'] != '':
+                                                changesStr += '\n\t错误 : {0}'.format(va[kva]['changes']['stderr'])
+                                            if 'stdout' in va[kva]['changes'].keys() and va[kva]['changes']['stdout'] != '':
+                                                changesStr += '\n\t输出 : {0}'.format(va[kva]['changes']['stdout'])
+                                        else:
+                                            pass
+                                        va[kva]['changes'] = changesStr
+                                    else:
+                                        pass
+
                                     strva = '结果 : {0}\n标签 : {1}\n操作 : {2}\n开始 : {3}\n耗时 : {4} ms\n变动 : {5}\n{6}\n'.format(va[kva]['result'],liva[1],va[kva]['comment'],va[kva]['start_time'],va[kva]['duration'],va[kva]['changes'],'------------------------------------------------------------')
                                     longstrva += strva
 
@@ -229,7 +253,7 @@ def module_update(request):
     valcon = {}
     hostsft = {}
     jid = []
-    liv = []
+    #liv = []
     objlist = []
     hostfa = 0
     hosttr = 0
@@ -255,20 +279,52 @@ def module_update(request):
                                 time.sleep(30)
                                 sql = 'select id,`return` from salt_returns where jid=%s'
                                 result = db.select_table(settings.RETURNS_MYSQL,sql,str(i))
+                                
+                                #result = {'zhaogb-201':{'file_|-info_so_1_|-/usr/lib64/libodbc.so.1_|-managed': {'comment': 'zhaogb-201', 'name': '/usr/lib64/libodbc.so.1', 'start_time': 'zhaogb-201', 'result': True, 'duration': 'zhaogb-201', '__run_num__': 2, 'changes': {}}},'zhaogb-202':{'file_|-info_so_1_|-/usr/lib64/libodbc.so.1_|-managed': {'comment': 'zhaogb-202', 'name': 'zhaogb-202', 'start_time': 'zhaogb-202', 'result': True, 'duration': 'zhaogb-202', '__run_num__': 2, 'changes': {'diff': 'New file', 'mode': '0644'}}}}
+                                
                                 hostrsum = len(result)
                                 returnset = set(result.keys())
 
                             for ka,va in result.iteritems():
+                                # result {'zhaogb-201':{},'zhaobg-202':{}}
+                                # ka zhaogb-201,zhaogb-202
+                                # va {'mo_watch':{'comment':'','result':'',...}}
+                                valcon = {}
+                                longstrva = ''
+                                falseStatus = 0
+                                trueStatus = 0
+                                liv = []
                                 for kva in va.keys():
+                                    # kva mo_watch,...
+                                    liva = kva.split('_|-')
                                     liv.append(va[kva]['result'])
+                                    strva = '结果 : {0}\n标签 : {1}\n操作 : {2}\n开始 : {3}\n耗时 : {4} ms\n变动 : {5}\n{6}\n'.format(va[kva]['result'],liva[1],va[kva]['comment'],va[kva]['start_time'],va[kva]['duration'],va[kva]['changes'],'------------------------------------------------------------')
+                                    longstrva += strva
+
                                 if False in liv:
                                     colour = 'False'
                                     hostfa += 1
-                                else:
+                                elif True in liv:
                                     colour = 'True'
                                     hosttr += 1
+                                else:
+                                    pass
+                                    # error write to logging
+                                    
+                                totalStatus = len(liv)
+                                for livStatus in liv:
+                                    if livStatus == False:
+                                        falseStatus += 1
+                                    elif livStatus == True:
+                                        trueStatus += 1
+                                    else:
+                                        pass
+                                        # error write to logging                                    
+                                
+                                longstrva += '失败 : {0}\n成功 : {1}\n总计 : {2}'.format(falseStatus, trueStatus, totalStatus)
+
                                 valcon['status'] = colour
-                                valcon['cont'] = va
+                                valcon['cont'] = longstrva
                                 unret[ka] = valcon
                             if tgt == '*':
                                 hostsum = len(tgtminis)
@@ -323,6 +379,7 @@ def module_update(request):
                 unret['亲，木有指定目标主机'] = valcon
     if unret:
         ret = unret
+        #ret = {'zhaogb-201':{'cont':'zhaogb-201','status': 'True'},'zhaogb-202':{'cont':'zhaogb-202','status': 'Fasle'},'zhaogb-203':{'cont':'zhaogb-203','status': 'Fasle'},'zhaogb-205':{'cont':'zhaogb-205','status': 'True'}}
     else:
         valcon['status'] = 'False'
         valcon['cont'] = '骚年，你不相信我，就算点开看，也还是没有返回结果！'

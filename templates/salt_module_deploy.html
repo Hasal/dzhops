@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load spacify %}
 {% block title %}模块部署-移动终端自动化运维平台{% endblock %}
 {% block nav %}
     <li><a href="{% url 'key_list' %}">认证信息</a></li>
@@ -71,7 +72,10 @@
                                               {% if hostsft %}
                                                 <div class="alert alert-success" role="alert">
                                                   <strong>
-                                                    本次执行对象共{{ hostsft.sum }}台，其中{{ hostsft.rsum }}台返回结果：成功{{hostsft.tr}}台，失败{{hostsft.fa}}台；未返回结果的有以下{{hostsft.unre}}台：{{ hostsft.unrestr }}
+                                                    本次执行对象共{{ hostsft.sum }}台，其中{{ hostsft.rsum }}台返回结果：成功{{hostsft.tr}}台，失败{{hostsft.fa}}台；
+                                                    {% if hostsft.unrestr %}
+                                                    未返回结果的有以下{{hostsft.unre}}台：{{ hostsft.unrestr }}
+                                                    {% endif %}
                                                   </strong> 
                                                 </div>
                                               {% endif %}
@@ -96,7 +100,7 @@
                                                         <h4 class="modal-title" id="myModalLabel">{{ each_ret }}</h4>
                                                       </div>
                                                       <div class="modal-body">
-                                                        {{ each_val.cont|linebreaksbr }}
+                                                        {{ each_val.cont|linebreaksbr|spacify|safe }}
                                                       </div>
                                                       <div class="modal-footer">
                                                         <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>

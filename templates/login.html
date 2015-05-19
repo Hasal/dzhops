@@ -64,10 +64,10 @@
         </div><!--/.nav-collapse -->
       </div>
     </nav>
-
+    {% load spacify %}
     <div class="container theme-showcase" role="main"> 
     <div>
-    {{ relt|linebreaksbr }}
+        {{ relt|linebreaksbr|spacify|safe }}
     </div>
 
     <div>
