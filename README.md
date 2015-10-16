@@ -1,5 +1,5 @@
 # dzhops   
-+ 使用Django框架开发的Salt Stack Web-UI   
++ 使用Django框架开发的Salt Stack Web UI   
 
 ##环境：   
 + salt-master 2014.7.0     
