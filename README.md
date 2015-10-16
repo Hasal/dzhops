@@ -10,3 +10,5 @@
 + MySQL 5.5  
   
 ## 功能介绍
++ 认证信息
+![认证信息](https://github.com/Hasal/picture/blob/master/dzhops_pic/au.png)
