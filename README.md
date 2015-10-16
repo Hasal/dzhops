@@ -10,7 +10,7 @@
 + MySQL 5.5  
   
 ## 功能介绍
-1.认证信息
+1.**认证信息**
 ![认证信息](https://github.com/Hasal/picture/blob/master/dzhops_pic/au.png)
 2.模块部署-返回结果，蓝色表示执行成功，红色表示有失败存在，可以点击标签查看详细情况
 ![模块部署-返回结果](https://github.com/Hasal/picture/blob/master/dzhops_pic/deploy.png)
