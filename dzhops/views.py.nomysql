@@ -16,9 +16,21 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 #from bootstrap_toolkit.widgets import BootstrapUneditableInput
 from django.contrib.auth.decorators import login_required
-import MySQLdb
+import MySQLdb,urllib
 from dzhops import settings
 from common.saltapi import SaltAPI
+
+class scriptApi(SaltAPI):
+    def mini_status(self):
+        '''
+        {u'return': [{u'down': [u'zhaogb-202'], u'up': [u'zhaogb-203', u'zhaogb-212', u'zhaogb-220']}]}
+        '''
+        params = {"client":"runner","fun":"manage.status"}
+        obj = urllib.urlencode(params)
+        content = self.postRequest(obj)
+        mini_up = content['return'][0]['up']
+        mini_down = content['return'][0]['down']
+        return mini_up,mini_down
 
 #@login_required
 def logout(request):
@@ -112,6 +124,27 @@ def index(request):
     else:
         ret['snmpst'] = 'UNKNOWNN'
 
+    try:
+        sapi = scriptApi(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])
+        minions,minions_pre,minions_rej = sapi.list_all_key()
+        mini_up, mini_down = sapi.mini_status()
+
+        ret['num_mini'] = len(minions)
+        ret['num_minipre'] = len(minions_pre)
+        ret['num_minirej'] = len(minions_rej)
+
+        ret['num_miniup'] = len(mini_up)
+        ret['num_minidown'] = len(mini_down)
+        ret['num_miniall'] = ret['num_miniup'] + ret['num_minidown']
+
+    except Exception:
+        ret['num_mini'] = '0'
+        ret['num_minipre'] = '0'
+        ret['num_minirej'] = '0'
+
+        ret['num_miniup'] = '0'
+        ret['num_minidown'] = '0'
+        ret['num_miniall'] = '0'
 
 
     return render_to_response('index.html', {'ret':ret})

@@ -25,13 +25,7 @@
                                       <th>备行情源</th>
                                       <th>授权日期</th>
                                       <th>授权状态</th>
-<!--
-                                      <th>内存</th>
-                                      <th>CPU数目</th>
-                                      <th>CPU核数</th>
-                                      <th>CPU型号</th>
-                                      <th>操作系统</th>
--->
+                                      <th>维护人员</th>
                                       <th>备注</th>
                                       <th>操作</th>
                                    </tr>
@@ -48,11 +42,9 @@
                                       <td>{{ all_host.bsourceip }}</td>
                                       <td>{{ all_host.licdate }}</td>
                                       <td>{{ all_host.licstatus }}</td>
+                                      <td>{{ all_host.engineer }}</td>
                                       <td>{{ all_host.remark }}</td>
                                       <td><a href="{% url 'host_manage' id=all_host.id %}" class="btn btn-info btn-sm">编辑</a> 
-<!--
-                                          <a href="/asset/delete_host/?id={{ all_host.id }}&delete=1" style="color:white" class="btn btn-danger btn-sm" role="button">删除</a>
--->
                                           <a href="/hostlist/delete/?id={{ all_host.id }}&delete=1" class="btn btn-danger btn-sm" role="button">删除</a>
                                       </td>
                                    </tr>

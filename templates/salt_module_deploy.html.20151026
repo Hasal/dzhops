@@ -52,30 +52,17 @@
                                     <div class="form-group">
                                          <input type="hidden" name="mod" value={{ module }}>
                                          <div class="col-md-offset-11 col-md-12">
-											<!--start-->
-											<!-- Large modal -->
-											<button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#myModal">提交</button>
-											<div class="modal fade" id='myModal' tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" data-backdrop='static' data-keyboard='false'>
-											  <div class="modal-dialog modal-lg">
-												<div class="modal-content">
-											<span style="text-align:center;color:red">
-												  <br />
-												  <h4>命令已经提交，正在执行中...</h4>
-												  <h4>请不要按<strong>&lt;ESC&gt;键</strong></h4>
-												  <h4>请不要对本页进行<strong>刷新、关闭</strong>等操作</h4>
-												  <h4>静候结果，马上返回...</h4>
-													<br />
-													<div class="progress progress-striped active">
-													<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%;">
-													<span class="sr-only">75% 完成</span>
-													</div>
-													</div>
-												  <br />
-											</span>
-												</div>
-											  </div>
-											</div>
-											<!--end-->
+                                          <button type="submit" id="mo_deploy" data-loading-text="......." class="btn btn-primary" onclick="loag()" autocomplete="off">
+                                            提交
+                                          </button>
+                                          <script>
+                                                function loag() {
+                                                    var btn = $("#mo_deploy");
+                                                    btn.button('loading');
+                                                    setTimeout(function () { btn.button('reset'); },36000000);
+                                                    // 36000000ms = 10h
+                                                }
+                                          </script>
                                          </div>
                                     </div>
                                     <div class="form-group">

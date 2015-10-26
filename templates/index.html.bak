@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}移动终端自动化运维平台{% endblock %}
+{% block nav %}
+            <li><a href="{% url 'key_list' %}">认证信息</a></li>
+            <li><a href="{% url 'module_deploy' %}">模块部署</a></li>
+            <li><a href="{% url 'module_update' %}">模块更新</a></li>
+            <li><a href="{% url 'remote_execution' %}">远程操作</a></li>
+            <li><a href="{% url 'host_list' %}">主机列表</a></li>
+{% endblock %}
+{% block content %}
+    <div class="container theme-showcase" role="main">
+
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="jumbotron">
+        <h4>自动化平台简介：</h4>  
+            本平台使用B/S架构，服务端基于SaltStack，并根据公司独有业务需求进行二次开发；鉴于官方提供的Web-UI体验较差，遂自行开发，使用Django框架，前端利用bootstrap提供的模板快速开发，后端各模块在他人代码基础上进行优化、重绘；数据库目前使用的是MySQL主从架构。<br />
+            <br />
+            2014.10.09 开始SaltStack自动化运维项目；<br />
+            2014.11.03 实现服务部署、授权下发、配置更新等一期功能；<br />
+            2014.11.06 运维内部会议，对一期功能进行演示；<br />
+            2014.12.26 大智慧SaltStack安装部署维护手册初稿完成；<br />
+            2014.12.26 解决2014.7.0版本对gb2312编码配置文件报错问题；<br />
+            2014.12.31 生产环境环境发布，对新接入30台行情服务器进行自动化管理；<br />
+            2015.01.23 开始接入剩余行情服务器，共计164台手机行情服务器；<br />
+            2015.01.26 解决Salt执行结果return键内容包含gb2312编码字符入库报错问题；<br />
+            2015.03.05 生产环境发布命令执行结果入库功能，采用MySQL主从架构；<br />
+            2015.03.06 更新版大智慧SaltStack安装部署维护手册发布，增加已经实现的功能相关内容；<br />
+            2015.03.11 解决salt-api执行命令返回结果中gb2312编码字符报错问题；<br />
+            2015.03.12 Web后端代码优化、重绘中...<br />
+            2015.04.15 使用git进行版本控制，进入测试环境验证；<br />
+            2015.05.04 新版Web前端demo完成；<br />
+			2015.05.13 新版Web前端增加判断目标、返回结果主机数目，成功、失败主机数目及未返回结果主机数目、列表，返回结果显示更为清晰明了。（Salt无此功能）<br />
+            <br />
+      </div>
+
+    </div> <!-- /container -->
+{% endblock %}
+{% block footer %}
+    <footer class="footer ">
+      <div class="container">
+        <div class="row footer-bottom">
+          <ul class="list-inline text-center">
+            <li>&copy; 2015</a></li><li><a href="mailto:zhaoguibin@gw.com.cn" target="_blank">移动终端</li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+{% endblock %}

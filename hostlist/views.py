@@ -11,6 +11,7 @@ from dzhops.mysql import db_operate
 from dzhops import settings
 #from dzhops.models import *
 
+#@login_required
 def host_list_manage(request,id=None):
     """
     Manage Host List
@@ -21,7 +22,7 @@ def host_list_manage(request,id=None):
         action = 'edit'
         page_name = '编辑主机'
         db = db_operate() 
-        sql = 'select ip from asset_hostlist where id = %s' % (id)
+        sql = 'select ip from hostlist_hostlist where id = %s' % (id)
         ret = db.mysql_command(settings.DATABASES,sql)
     else:
         host_list = HostList()
@@ -58,6 +59,7 @@ def host_list_manage(request,id=None):
             "action": action,
            },context_instance=RequestContext(request))
 
+#@login_required
 def host_list(request):
     """
     List all Hosts

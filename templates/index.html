@@ -10,28 +10,77 @@
 {% block content %}
     <div class="container theme-showcase" role="main">
 
-      <!-- Main jumbotron for a primary marketing message or call to action -->
-      <div class="jumbotron">
-        <h4>自动化平台简介：</h4>  
-            本平台使用B/S架构，服务端基于SaltStack，并根据公司独有业务需求进行二次开发；鉴于官方提供的Web-UI体验较差，遂自行开发，使用Django框架，前端利用bootstrap提供的模板快速开发，后端各模块在他人代码基础上进行优化、重绘；数据库目前使用的是MySQL主从架构。<br />
-            <br />
-            2014.10.09 开始SaltStack自动化运维项目；<br />
-            2014.11.03 实现服务部署、授权下发、配置更新等一期功能；<br />
-            2014.11.06 运维内部会议，对一期功能进行演示；<br />
-            2014.12.26 SaltStack安装部署维护手册初稿完成；<br />
-            2014.12.26 解决2014.7.0版本对gb2312编码配置文件报错问题；<br />
-            2014.12.31 生产环境环境发布，对新接入30台行情服务器进行自动化管理；<br />
-            2015.01.23 开始接入剩余行情服务器，共计500台手机行情服务器；<br />
-            2015.01.26 解决Salt执行结果return键内容包含gb2312编码字符入库报错问题；<br />
-            2015.03.05 生产环境发布命令执行结果入库功能，采用MySQL主从架构；<br />
-            2015.03.06 更新版大智慧SaltStack安装部署维护手册发布，增加已经实现的功能相关内容；<br />
-            2015.03.11 解决salt-api执行命令返回结果中gb2312编码字符报错问题；<br />
-            2015.03.12 Web后端代码优化、重绘中...<br />
-            2015.04.15 使用git进行版本控制，进入测试环境验证；<br />
-            2015.05.04 新版Web前端demo完成；<br />
-			2015.05.13 新版Web前端增加判断目标、返回结果主机数目，成功、失败主机数目及未返回结果主机数目、列表，返回结果显示更为清晰明了。（Salt无此功能）<br />
-            <br />
-      </div>
+      <div class="row">
+		<div class="col-sm-4">
+          <ul class="list-group">
+            <li class="list-group-item  active">服务器信息({{ret.nowtime}})</li>
+            <li class="list-group-item">系统负载 : <strong>{{ret.sysone}}, {{ret.sysfive}}, {{ret.sysfifteen}}</strong></li>
+            <li class="list-group-item">CPU利用率 : <strong>{{ret.cpuperc}}%</strong></li>
+            <li class="list-group-item">内存 : <strong>{{ret.memused}}G/{{ret.memtotal}}G {{ret.memperc}}%</strong></li>
+            <li class="list-group-item">硬盘 : <strong>{{ret.diskused}}G/{{ret.disktotal}}G {{ret.diskperc}}%</strong></li>
+          </ul>
+        </div><!-- /.col-sm-4 -->
+        <div class="col-sm-4">
+          <ul class="list-group">
+            <li class="list-group-item active">组件状态({{ret.proctime}})</li>
+            <li class="list-group-item">SaltStack进程 : <strong>{{ret.saltst}}</strong></li>
+            <li class="list-group-item">Salt-API进程 : <strong>{{ret.apist}}</strong></li>
+            <li class="list-group-item">MySQL进程 : <strong>{{ret.myst}}</strong></li>
+            <li class="list-group-item">SNMP进程 : <strong>{{ret.snmpst}}</strong></li>
+          </ul>
+        </div><!-- /.col-sm-4 -->
+		<div class="col-sm-2">
+          <ul class="list-group">
+            <li class="list-group-item active">Minions状态</li>
+            <li class="list-group-item">总量 : <strong>{{ret.num_miniall}}</strong> 台</li>
+            <li class="list-group-item">在线 : <strong>{{ret.num_miniup}}</strong> 台</li>
+            <li class="list-group-item">离线 : <strong>{{ret.num_minidown}}</strong> 台</li>
+            <!--li class="list-group-item">备用</li-->
+          </ul>
+        </div><!-- /.col-sm-2 -->
+		<div class="col-sm-2">
+          <ul class="list-group">
+            <li class="list-group-item active">Key列表</li>
+            <li class="list-group-item">已接受 : <strong>{{ret.num_mini}}</strong> 台</li>
+            <li class="list-group-item">待接受 : <strong>{{ret.num_minipre}}</strong> 台</li>
+            <li class="list-group-item">已拒绝 : <strong>{{ret.num_minirej}}</strong> 台</li>
+            <!--li class="list-group-item">备用</li-->
+          </ul>
+        </div><!-- /.col-sm-2 -->
+	  </div>
+
+	  <div class="row">
+        <div class="col-sm-8">
+          <div class="panel panel-primary">
+            <div class="panel-heading">
+              <h3 class="panel-title">网卡流量</h3>
+            </div>
+            <div class="panel-body">
+			<img src="/static/img/8.png" width="712" height="242" />
+            </div>
+          </div>
+        </div><!-- /.col-sm-8 -->
+        <div class="col-sm-4">
+          <div class="panel panel-primary">
+            <div class="panel-heading">
+              <h3 class="panel-title">系统消息</h3>
+            </div>
+            <div class="panel-body">
+              欢迎回来，<u>zhaogb</u><br />
+			  <br />
+              <strong>上次登录</strong><br />
+              登录时间 : 2015.10.20 11:00<br />
+              登录地址 : 180.169.10.222 [上海市 电信] <br />
+              登录提示 : 正常<br />
+              <br />
+              <strong>用户操作</strong><br />
+              2015.10.20 10:45 test_1 清理所有行情服务器日志；<br />
+              2015.10.20 09:30 test_6 更换信息园机房所有行情授权；<br />
+              2015.10.19 16:03 test_3 查看认证代理运行状态；<br />
+            </div>
+          </div>
+        </div><!-- /.col-sm-4 -->
+	  </div>
 
     </div> <!-- /container -->
 {% endblock %}

@@ -64,6 +64,26 @@
                                  </div>
                             </div>
                             <div class="form-group">
+                                 <label class="col-sm-3 control-label">维护人员</label>
+                                 <div class="col-sm-6">
+                                 <!--
+                                    <select name="sel">                                     
+                                        <option value="1">段富荣</option>
+                                        <option value="2">小铃铛</option>
+                                        <option value="3">朱捷文</option>
+                                        <option value="4">秦磊</option>
+                                        <option value="5">龚卫振</option> 
+                                        <option value="6">栋栋</option>
+                                        <option value="7">周颖飞</option>
+                                        <option value="8">赵贵斌</option>
+                                    </select>
+                                 -->
+                                 {{ form.engineer }}
+                                 {{ form.engineer.errors }}
+                                 
+                                 </div>
+                            </div>
+                            <div class="form-group">
                                  <label class="col-sm-3 control-label">备注</label>
                                  <div class="col-sm-6">
                                  {{ form.remark }}

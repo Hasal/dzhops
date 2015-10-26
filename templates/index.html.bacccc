@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}移动终端自动化运维平台{% endblock %}
+{% block nav %}
+            <li><a href="{% url 'key_list' %}">认证信息</a></li>
+            <li><a href="{% url 'module_deploy' %}">模块部署</a></li>
+            <li><a href="{% url 'module_update' %}">模块更新</a></li>
+            <li><a href="{% url 'remote_execution' %}">远程操作</a></li>
+            <li><a href="{% url 'host_list' %}">主机列表</a></li>
+{% endblock %}
+{% block content %}
+    <div class="container theme-showcase" role="main">
+
+      <div class="row">
+		<div class="col-sm-4">
+          <ul class="list-group">
+            <li class="list-group-item  active">服务器信息</li>
+            <li class="list-group-item">系统负载  1分钟:0.01 | 5分钟:0.01 | 15分钟:0.01</li>
+            <li class="list-group-item">CPU : 50%</li>
+            <li class="list-group-item">内存 : 1.5G/4G 35%</li>
+            <li class="list-group-item">硬盘 : 15G/500G 10%</li>
+          </ul>
+        </div><!-- /.col-sm-4 -->
+        <div class="col-sm-4">
+          <ul class="list-group">
+            <li class="list-group-item active">组件状态</li>
+            <li class="list-group-item">SaltStack进程 : 正常</li>
+            <li class="list-group-item">Salt-API进程 : 正常</li>
+            <li class="list-group-item">MySQL进程 : 异常</li>
+            <!--li class="list-group-item">备用</li-->
+          </ul>
+        </div><!-- /.col-sm-4 -->
+		<div class="col-sm-4">
+          <ul class="list-group">
+            <li class="list-group-item active">Minions</li>
+            <li class="list-group-item">总量 : 500台</li>
+            <li class="list-group-item">在线 : 490台</li>
+            <li class="list-group-item">离线 : 10台</li>
+            <!--li class="list-group-item">备用</li-->
+          </ul>
+        </div><!-- /.col-sm-4 -->
+	  </div>
+
+	  <div class="row">
+        <div class="col-sm-12">
+          <div class="panel panel-primary">
+            <div class="panel-heading">
+              <h3 class="panel-title">网卡流量</h3>
+            </div>
+            <div class="panel-body">
+              流量图<br />
+              流量图<br />
+              流量图<br />
+              我是又高又大的流量图<br />
+              我是又高又大的流量图<br />
+              我是又高又大的流量图<br />
+              我是又高又大的流量图<br />
+              我是又高又大的流量图<br />
+              我是又高又大的流量图<br />
+              流量图<br />
+              流量图<br />
+              流量图<br />
+            </div>
+          </div>
+        </div><!-- /.col-sm-4 -->
+	  </div>
+
+    </div> <!-- /container -->
+{% endblock %}
+{% block footer %}
+    <footer class="footer ">
+      <div class="container">
+        <div class="row footer-bottom">
+          <ul class="list-inline text-center">
+            <li>&copy; 2015</a></li><li><a href="mailto:zhaoguibin@gw.com.cn" target="_blank">移动终端</li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+{% endblock %}

@@ -19,13 +19,13 @@ import json
 #@login_required
 def salt_key_list(request):
     """
-    list all key
+    list all key 
     """
 
-    sapi = SaltAPI(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])
-    minions,minions_pre,minions_rej = sapi.list_all_key()
-
-    return render_to_response('salt_key_list.html', {'all_minions': minions, 'all_minions_pre': minions_pre, 'all_minions_rej' : minions_rej})
+    sapi = SaltAPI(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])  
+    minions,minions_pre = sapi.list_all_key() 
+    
+    return render_to_response('salt_key_list.html', {'all_minions': minions, 'all_minions_pre': minions_pre}) 
 
 
 def salt_accept_key(request):
@@ -34,9 +34,9 @@ def salt_accept_key(request):
     """
 
     node_name = request.GET.get('node_name')
-    sapi = SaltAPI(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])
+    sapi = SaltAPI(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])  
     ret = sapi.accept_key(node_name)
-    return HttpResponseRedirect(reverse('key_list'))
+    return HttpResponseRedirect(reverse('key_list')) 
 
 
 def salt_delete_key(request):
@@ -45,7 +45,7 @@ def salt_delete_key(request):
     """
 
     node_name = request.GET.get('node_name')
-    sapi = SaltAPI(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])
+    sapi = SaltAPI(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])  
     ret = sapi.delete_key(node_name)
     return HttpResponseRedirect(reverse('key_list'))
 
@@ -56,13 +56,13 @@ def tgtCheck():
     in  : ['zhaogb-201','zhaogb-202','dzh-wgq101','dzh-wgq223','dzh-wgq233']
     out : ['zhaogb-201','zhaogb-202','dzh-wgq101','dzh-wgq223','dzh-wgq233','zhaogb-*','dzh-wgq*','*'],['zhaogb-201','zhaogb-202','dzh-wgq115',...],['zhaogb-','dzh-wgq',...]
     """
-
+    
     groupli = []
     grouplinox = []
-    sapi = SaltAPI(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])
-    minions,minions_pre,minions_rej = sapi.list_all_key()
+    sapi = SaltAPI(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])  
+    minions,minions_pre = sapi.list_all_key()
     miniaccept = minions[:]
-
+    
     for mini in miniaccept:
         hostskey = re.sub(r'[0-9]', '', mini)
         groupkey = hostskey + '*'
@@ -73,8 +73,8 @@ def tgtCheck():
     grouptgt.extend(minions)
     tgtTuple = tuple(grouptgt)
     return tgtTuple,minions,grouplinox
-
-#@login_required
+    
+#@login_required    
 def module_deploy(request):
     """
     deploy (mobile/manager/info..) module
@@ -103,7 +103,7 @@ def module_deploy(request):
                 if tgt in tgtTest:
                     if arg:
                         if len(arg) < 2:
-                            sapi = SaltAPI(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])
+                            sapi = SaltAPI(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])  
                             for i in arg:
                                 obj = sapi.async_deploy(tgt,i)
                                 jid.append(obj)
@@ -112,9 +112,9 @@ def module_deploy(request):
                                 time.sleep(30)
                                 sql = 'select id,`return` from salt_returns where jid=%s'
                                 result = db.select_table(settings.RETURNS_MYSQL,sql,str(i))
-
+                                
                                 #result = {'zhaogb-201':{'file_|-info_so_1_|-/usr/lib64/libodbc.so.1_|-managed': {'comment': 'zhaogb-201', 'name': '/usr/lib64/libodbc.so.1', 'start_time': 'zhaogb-201', 'result': True, 'duration': 'zhaogb-201', '__run_num__': 2, 'changes': {}}},'zhaogb-202':{'file_|-info_so_1_|-/usr/lib64/libodbc.so.1_|-managed': {'comment': 'zhaogb-202', 'name': 'zhaogb-202', 'start_time': 'zhaogb-202', 'result': True, 'duration': 'zhaogb-202', '__run_num__': 2, 'changes': {'diff': 'New file', 'mode': '0644'}}}}
-
+                                
                                 hostrsum = len(result)
                                 returnset = set(result.keys())
 
@@ -130,7 +130,7 @@ def module_deploy(request):
                                 for kva in va.keys():
                                     # kva mo_watch,...
                                     liva = kva.split('_|-')
-                                    liv.append(va[kva]['result'])
+                                    liv.append(va[kva]['result'])                                
 
                                     if va[kva]['changes']:
                                         changesStr = ''
@@ -167,7 +167,7 @@ def module_deploy(request):
                                 else:
                                     pass
                                     # error write to logging
-
+                                    
                                 totalStatus = len(liv)
                                 for livStatus in liv:
                                     if livStatus == False:
@@ -176,8 +176,8 @@ def module_deploy(request):
                                         trueStatus += 1
                                     else:
                                         pass
-                                        # error write to logging
-
+                                        # error write to logging                                    
+                                
                                 longstrva += '失败 : {0}\n成功 : {1}\n总计 : {2}'.format(falseStatus, trueStatus, totalStatus)
 
                                 valcon['status'] = colour
@@ -210,7 +210,7 @@ def module_deploy(request):
                                 diffset = sumset - returnset
                                 hostunre = len(diffset)
                                 hostunrestr = ','.join(list(diffset))
-
+                            
                             hostsft['sum'] = hostsum
                             hostsft['rsum'] = hostrsum
                             hostsft['unre'] = hostunre
@@ -241,9 +241,9 @@ def module_deploy(request):
         valcon['status'] = 'False'
         valcon['cont'] = '骚年，你不相信我，就算点开看，也还是没有返回结果！'
         ret['没有返回任何结果'] = valcon
-
-    return render_to_response('salt_module_deploy.html',
-           {'ret': ret, 'hostsft': hostsft},context_instance=RequestContext(request))
+            
+    return render_to_response('salt_module_deploy.html', 
+           {'ret': ret, 'hostsft': hostsft},context_instance=RequestContext(request)) 
 
 #@login_required
 def module_update(request):
@@ -274,7 +274,7 @@ def module_update(request):
                 if tgt in tgtTest:
                     if arg:
                         if len(arg) < 2:
-                            sapi = SaltAPI(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])
+                            sapi = SaltAPI(url=settings.SALT_API['url'],username=settings.SALT_API['user'],password=settings.SALT_API['password'])  
                             for i in arg:
                                 obj,reContent = sapi.async_deploy(tgt,i)
                                 jid.append(obj)
@@ -283,9 +283,9 @@ def module_update(request):
                                 #time.sleep(30)
                                 sql = 'select id,`return` from salt_returns where jid=%s'
                                 result = db.select_table(settings.RETURNS_MYSQL,sql,str(i))
-
+                                
                                 #result = {'zhaogb-201':{'file_|-info_so_1_|-/usr/lib64/libodbc.so.1_|-managed': {'comment': 'zhaogb-201', 'name': '/usr/lib64/libodbc.so.1', 'start_time': 'zhaogb-201', 'result': True, 'duration': 'zhaogb-201', '__run_num__': 2, 'changes': {}}},'zhaogb-202':{'file_|-info_so_1_|-/usr/lib64/libodbc.so.1_|-managed': {'comment': 'zhaogb-202', 'name': 'zhaogb-202', 'start_time': 'zhaogb-202', 'result': True, 'duration': 'zhaogb-202', '__run_num__': 2, 'changes': {'diff': 'New file', 'mode': '0644'}}}}
-
+                                
                                 hostrsum = len(result)
                                 returnset = set(result.keys())
 
@@ -314,7 +314,7 @@ def module_update(request):
                                 else:
                                     pass
                                     # error write to logging
-
+                                    
                                 totalStatus = len(liv)
                                 for livStatus in liv:
                                     if livStatus == False:
@@ -323,8 +323,8 @@ def module_update(request):
                                         trueStatus += 1
                                     else:
                                         pass
-                                        # error write to logging
-
+                                        # error write to logging                                    
+                                
                                 longstrva += '失败 : {0}\n成功 : {1}\n总计 : {2}'.format(falseStatus, trueStatus, totalStatus)
 
                                 valcon['status'] = colour
@@ -357,7 +357,7 @@ def module_update(request):
                                 diffset = sumset - returnset
                                 hostunre = len(diffset)
                                 hostunrestr = ','.join(list(diffset))
-
+                            
                             hostsft['sum'] = hostsum
                             hostsft['rsum'] = hostrsum
                             hostsft['unre'] = hostunre
@@ -389,14 +389,14 @@ def module_update(request):
         valcon['cont'] = '骚年，你不相信我，就算点开看，也还是没有返回结果！'
         ret['没有返回任何结果'] = valcon
 
-    return render_to_response('salt_module_update.html',
-           {'ret': ret, 'hostsft': hostsft},context_instance=RequestContext(request))
+    return render_to_response('salt_module_update.html', 
+           {'ret': ret, 'hostsft': hostsft},context_instance=RequestContext(request)) 
 
 #@login_required
 def remote_execution(request):
     """
     remote command execution
-    out(type:string)    ret = 'format string'
+    out(type:string)    ret = 'format string' 
     """
 
     ret = ''
@@ -428,7 +428,7 @@ def remote_execution(request):
                 ret = '目标主机不合法，只能形如zhaogb-201、zhaogb-*、* ！'
         else:
             ret = '没有指定目标主机，请重新输入！'
-
+         
     return render_to_response('salt_remote_execution.html',
-           {'ret': ret},context_instance=RequestContext(request))
+           {'ret': ret},context_instance=RequestContext(request)) 
 

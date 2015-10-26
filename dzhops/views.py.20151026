@@ -17,8 +17,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 #from bootstrap_toolkit.widgets import BootstrapUneditableInput
 from django.contrib.auth.decorators import login_required
 import MySQLdb
-from dzhops import settings
-from common.saltapi import SaltAPI
+
 
 #@login_required
 def logout(request):
@@ -27,18 +26,21 @@ def logout(request):
 
 def index(request):
     # mysql
-    conf = settings.DATABASES['default']
+    host = '192.168.220.201'
+    db = 'dzhops'
+    user = 'dzhops'
+    pw = 'dzhinternet'
+    port = 3306
     serv_sql = '''SELECT * from `servstatus` order by id DESC limit 1'''
     proc_sql = '''SELECT * from `procstatus` order by id DESC limit 1'''
-    mikey_sql = '''SELECT * from `minikeys` order by id DESC limit 1'''
     try:
         conn = MySQLdb.connect(
-                host = conf['HOST'],
-                user = conf['USER'],
-                passwd = conf['PASSWORD'],
-                db = conf['NAME'],
-                port = conf['PORT'],
-                charset='utf8')
+            host = host,
+            user = user,
+            passwd = pw,
+            db = db,
+            port = port,
+            charset='utf8')
         cursor = conn.cursor()
         n = cursor.execute(serv_sql)
         conn.commit()
@@ -67,18 +69,6 @@ def index(request):
             myno = rowm[4]
             snmpno = rowm[5]
 
-        cursor = conn.cursor()
-        mk = cursor.execute(mikey_sql)
-        conn.commit()
-        for rowmk in cursor.fetchall():
-            ret['mktime'] = rowmk[1]
-            ret['num_miniall'] = rowmk[2]
-            ret['num_miniup'] = rowmk[3]
-            ret['num_minidown'] = rowmk[4]
-            ret['num_mini'] = rowmk[5]
-            ret['num_minipre'] = rowmk[6]
-            ret['num_minirej'] = rowmk[7]
-
     except MySQLdb.Error,e:
         ret = {}
         ret['errno'] = e[0]
@@ -89,30 +79,28 @@ def index(request):
     elif saltno == 1:
         ret['saltst'] = '异常'
     else:
-        ret['saltst'] = 'UNKNOWN'
+        ret['saltst'] = 'UNKNOW'
 
     if apino == 0:
         ret['apist'] = '正常'
     elif apino == 1:
         ret['apist'] = '异常'
     else:
-        ret['apist'] = 'UNKNOWN'
+        ret['apist'] = 'UNKNOW'
 
     if myno == 0:
         ret['myst'] = '正常'
     elif myno == 1:
         ret['myst'] = '异常'
     else:
-        ret['myst'] = 'UNKNOWN'
+        ret['myst'] = 'UNKNOW'
     
     if snmpno == 0:
         ret['snmpst'] = '正常'
     elif snmpno == 1:
         ret['snmpst'] = '异常'
     else:
-        ret['snmpst'] = 'UNKNOWNN'
-
-
+        ret['snmpst'] = 'UNKNOW'
 
     return render_to_response('index.html', {'ret':ret})
 

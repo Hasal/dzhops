@@ -62,10 +62,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'dzhops',
-        'USER': 'micro',
+        'USER': 'dzhops',
         'PORT': 3306,
-        'HOST': '127.0.0.1',
-        'PASSWORD': 'blog',
+        'HOST': '192.168.220.201',
+        'PASSWORD': 'dzhinternet',
     }
 }
 
@@ -95,22 +95,22 @@ STATIC_URL = '/static/'
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
-SALT_API = {"url": "http://127.0.0.1:18000/",
-            "user": "zhaogb",
-            "password": "dzhinternet"
-            }
+#SALT_API = {"url": "http://127.0.0.1:18000/",
+#            "user": "zhaogb",
+#            "password": "dzhinternet"
+#            }
 
 # salt result
 
 RETURNS_MYSQL = {
     'default': 
     {
-        'ENGINE': '',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': 'salt',
-        'USER': 'micro',
+        'USER': 'salt',
         'PORT': 3306,
-        'HOST': '127.0.0.1',
-        'PASSWORD': 'blog'
+        'HOST': '192.168.220.201',
+        'PASSWORD': 'dzhinternet'
     }
 }
 # salt-api setting

@@ -33,13 +33,18 @@ class SaltAPI(object):
         return content
         
     def list_all_key(self):
+        '''
+        [u'local', u'minions_rejected', u'minions_denied', u'minions_pre', u'minions']
+        '''
+
         params = {'client': 'wheel', 'fun': 'key.list_all'}
         obj = urllib.urlencode(params)
         #self.salt_login()
         content = self.postRequest(obj)
         minions = content['return'][0]['data']['return']['minions']
         minions_pre = content['return'][0]['data']['return']['minions_pre']
-        return minions,minions_pre
+        minions_rej = content['return'][0]['data']['return']['minions_rejected']
+        return minions, minions_pre, minions_rej
 
     def delete_key(self,node_name):
         params = {'client': 'wheel', 'fun': 'key.delete', 'match': node_name}

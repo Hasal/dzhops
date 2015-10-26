@@ -13,6 +13,7 @@ class HostsListForm(forms.ModelForm):
           'bsourceip': forms.TextInput(attrs={'class': 'form-control'}),
           'licdate': forms.TextInput(attrs={'class': 'form-control'}),
           'licstatus': forms.TextInput(attrs={'class': 'form-control'}),
+          'engineer': forms.TextInput(attrs={'class': 'form-control'}),
           'remark': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
