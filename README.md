@@ -28,3 +28,9 @@
 ![远程命令执行](https://github.com/Hasal/picture/blob/master/dzhops_pic/exec.png)
 7.**主机列表信息**
 ![主机列表信息](https://github.com/Hasal/picture/blob/master/dzhops_pic/server_list.png)
+
+##计划任务设定
++ */5 * * * * /tmp/get_eth0_traffic.sh
++ */10 * * * * /var/www/dzhops/scripts/data_acquisition.py
++ */10 * * * * /var/www/dzhops/scripts/prc.py
++ */10 * * * * /var/www/dzhops/scripts/slapi.py
