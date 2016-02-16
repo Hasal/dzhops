@@ -1,97 +1,80 @@
 {% extends "base.html" %}
 {% block title %}移动终端自动化运维平台{% endblock %}
 {% block nav %}
-            <li><a href="{% url 'key_list' %}">认证信息</a></li>
-            <li><a href="{% url 'module_deploy' %}">模块部署</a></li>
-            <li><a href="{% url 'module_update' %}">模块更新</a></li>
-            <li><a href="{% url 'remote_execution' %}">远程操作</a></li>
-            <li><a href="{% url 'host_list' %}">主机列表</a></li>
+    <li class="active"><a href="{% url 'index' %}"><i class="glyphicon glyphicon-dashboard"></i> 仪表盘<span class="sr-only">(current)</span></a></li>
+    <li><a href="{% url 'host_list' %}"><i class="glyphicon glyphicon-th-list"></i> 主机列表</a></li>
+    <li><a href="{% url 'module_deploy' %}"><i class="glyphicon glyphicon-th-large"></i> SaltStack</a></li>
+    <li><a href="{% url 'replace_data' %}"><i class="glyphicon glyphicon-repeat"></i> 数据修复</a></li>
+    <li><a href="{% url 'key_list' %}"><i class="glyphicon glyphicon-tags"></i> MinionKeys</a></li>
+    <li><a href="{% url 'record' %}"><i class="glyphicon glyphicon-floppy-disk"></i> 操作记录</a></li>
 {% endblock %}
 {% block content %}
-    <div class="container theme-showcase" role="main">
-
-      <div class="row">
-		<div class="col-sm-4">
-          <ul class="list-group">
-            <li class="list-group-item  active">服务器信息({{ret.nowtime}})</li>
-            <li class="list-group-item">系统负载 : <strong>{{ret.sysone}}, {{ret.sysfive}}, {{ret.sysfifteen}}</strong></li>
-            <li class="list-group-item">CPU利用率 : <strong>{{ret.cpuperc}}%</strong></li>
-            <li class="list-group-item">内存 : <strong>{{ret.memused}}G/{{ret.memtotal}}G {{ret.memperc}}%</strong></li>
-            <li class="list-group-item">硬盘 : <strong>{{ret.diskused}}G/{{ret.disktotal}}G {{ret.diskperc}}%</strong></li>
-          </ul>
-        </div><!-- /.col-sm-4 -->
-        <div class="col-sm-4">
-          <ul class="list-group">
-            <li class="list-group-item active">组件状态({{ret.proctime}})</li>
-            <li class="list-group-item">SaltStack进程 : <strong>{{ret.saltst}}</strong></li>
-            <li class="list-group-item">Salt-API进程 : <strong>{{ret.apist}}</strong></li>
-            <li class="list-group-item">MySQL进程 : <strong>{{ret.myst}}</strong></li>
-            <li class="list-group-item">SNMP进程 : <strong>{{ret.snmpst}}</strong></li>
-          </ul>
-        </div><!-- /.col-sm-4 -->
-		<div class="col-sm-2">
-          <ul class="list-group">
-            <li class="list-group-item active">Minions状态</li>
-            <li class="list-group-item">总量 : <strong>{{ret.num_miniall}}</strong> 台</li>
-            <li class="list-group-item">在线 : <strong>{{ret.num_miniup}}</strong> 台</li>
-            <li class="list-group-item">离线 : <strong>{{ret.num_minidown}}</strong> 台</li>
-            <!--li class="list-group-item">备用</li-->
-          </ul>
-        </div><!-- /.col-sm-2 -->
-		<div class="col-sm-2">
-          <ul class="list-group">
-            <li class="list-group-item active">Key列表</li>
-            <li class="list-group-item">已接受 : <strong>{{ret.num_mini}}</strong> 台</li>
-            <li class="list-group-item">待接受 : <strong>{{ret.num_minipre}}</strong> 台</li>
-            <li class="list-group-item">已拒绝 : <strong>{{ret.num_minirej}}</strong> 台</li>
-            <!--li class="list-group-item">备用</li-->
-          </ul>
-        </div><!-- /.col-sm-2 -->
-	  </div>
-
-	  <div class="row">
-        <div class="col-sm-8">
-          <div class="panel panel-primary">
-            <div class="panel-heading">
-              <h3 class="panel-title">网卡流量</h3>
-            </div>
-            <div class="panel-body">
-			<img src="/static/img/8.png" width="712" height="242" />
-            </div>
-          </div>
-        </div><!-- /.col-sm-8 -->
-        <div class="col-sm-4">
-          <div class="panel panel-primary">
-            <div class="panel-heading">
-              <h3 class="panel-title">系统消息</h3>
-            </div>
-            <div class="panel-body">
-              欢迎回来，<u>zhaogb</u><br />
-			  <br />
-              <strong>上次登录</strong><br />
-              登录时间 : 2015.10.20 11:00<br />
-              登录地址 : 10.15.58.99 [内网 办公区] <br />
-              登录提示 : 正常<br />
-              <br />
-              <strong>用户操作</strong><br />
-              2015.10.20 10:45 test_1 清理所有行情服务器日志；<br />
-              2015.10.20 09:30 test_6 更换信息园机房所有行情授权；<br />
-              2015.10.19 16:03 test_3 查看认证代理运行状态；<br />
-            </div>
-          </div>
-        </div><!-- /.col-sm-4 -->
-	  </div>
-
-    </div> <!-- /container -->
-{% endblock %}
-{% block footer %}
-    <footer class="footer ">
-      <div class="container">
-        <div class="row footer-bottom">
-          <ul class="list-inline text-center">
-            <li>&copy; 2015</a></li><li><a href="mailto:zhaoguibin@gw.com.cn" target="_blank">移动终端</li>
-          </ul>
+    <h5 class="page-header">
+        <ol class="breadcrumb">
+            <li class="active">仪表盘</li>
+        </ol>
+    </h5>
+    <div class="col-xs-8 col-sm-4 placeholder">
+      <ul class="list-group">
+        <li class="list-group-item  active">服务器信息({{ret.nowtime|date:"Y-m-d H:i:s"}})</li>
+        <li class="list-group-item">系统负载 : <strong>{{ret.sysone}}, {{ret.sysfive}}, {{ret.sysfifteen}}</strong></li>
+        <li class="list-group-item">CPU利用率 : <strong>{{ret.cpuperc}}%</strong></li>
+        <li class="list-group-item">内存 : <strong>{{ret.memused}}G/{{ret.memtotal}}G {{ret.memperc}}%</strong></li>
+        <li class="list-group-item">硬盘 : <strong>{{ret.diskused}}G/{{ret.disktotal}}G {{ret.diskperc}}%</strong></li>
+      </ul>
+    </div>
+    <div class="col-xs-8 col-sm-4 placeholder">
+      <ul class="list-group">
+        <li class="list-group-item active">组件状态({{ret.proctime|date:"Y-m-d H:i:s"}})</li>
+        <li class="list-group-item">SaltStack进程 : <strong>{{ret.saltst}}</strong></li>
+        <li class="list-group-item">Salt-API进程 : <strong>{{ret.apist}}</strong></li>
+        <li class="list-group-item">MySQL进程 : <strong>{{ret.myst}}</strong></li>
+        <li class="list-group-item">SNMP进程 : <strong>{{ret.snmpst}}</strong></li>
+      </ul>
+    </div>
+    <div class="col-xs-4 col-sm-2 placeholder">
+      <ul class="list-group">
+        <li class="list-group-item active">Minions状态</li>
+        <li class="list-group-item">总量 : <strong>{{ret.num_miniall}}</strong> 台</li>
+        <li class="list-group-item">在线 : <strong>{{ret.num_miniup}}</strong> 台</li>
+        <li class="list-group-item">离线 : <strong>{{ret.num_minidown}}</strong> 台</li>
+        <!--li class="list-group-item">备用</li-->
+      </ul>
+    </div>
+    <div class="col-xs-4 col-sm-2 placeholder">
+      <ul class="list-group">
+        <a href="{% url 'key_list' %}" class="list-group-item active">Key列表</a>
+        <a href="{% url 'key_list' %}" class="list-group-item">已接受 : <strong>{{ret.num_mini}}</strong> 台</a>
+        <a href="{% url 'key_unaccept' %}" class="list-group-item">待接受 : <strong>{{ret.num_minipre}}</strong> 台</a>
+        <a href="{% url 'key_reject' %}" class="list-group-item">已拒绝 : <strong>{{ret.num_minirej}}</strong> 台</a>
+        <!--li class="list-group-item">备用</li-->
+      </ul>
+    </div>
+    <div class="col-xs-12 col-sm-6">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title">网卡流量</h3>
+        </div>
+        <div class="panel-body">
+            <img class="img-rounded" src="/static/img/8.png" width="465" height="182"alt="网卡流量图"/>
         </div>
       </div>
-    </footer>
+    </div>
+    <div class="col-xs-12 col-sm-6 placeholder">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title">系统消息</h3>
+        </div>
+        <div class="panel-body">
+          欢迎回来，<a href="/accounts/profile"><strong><u>{{ user.username }}</u></strong></a><br />
+          <!--
+          登录时间 : <strong>{{ user.last_login|date:"Y-m-d H:i:s" }}</strong><br />
+          -->
+          <br />
+          <strong><a href="{% url 'record' %}">操作记录：</a></strong><br />
+          <pre>{{ stret }}</pre>
+        </div>
+      </div>
+    </div>
 {% endblock %}
+

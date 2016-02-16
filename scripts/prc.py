@@ -29,7 +29,7 @@ snmproc = ExecCmd(snmpcmd)
 #print saltproc,apiproc,myproc,snmproc
 
 #save to mysql
-proc_sql = '''INSERT INTO `procstatus` 
+proc_sql = '''INSERT INTO `index_procstatus`
         (`nowtime`,`saltproc`,`apiproc`,`myproc`,`snmproc`) 
         VALUES 
         (now(), %s, %s, %s, %s)'''

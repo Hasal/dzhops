@@ -1,58 +1,48 @@
 {% extends "base.html" %}
 {% block title %}认证信息-移动终端自动化运维平台{% endblock %}
 {% block nav %}
-    <li class="active"><a href="{% url 'key_list' %}">认证信息</a></li>
-    <li><a href="{% url 'module_deploy' %}">模块部署</a></li>
-    <li><a href="{% url 'module_update' %}">模块更新</a></li>
-    <li><a href="{% url 'remote_execution' %}">远程操作</a></li>
-    <li><a href="{% url 'host_list' %}">主机列表</a></li>
+    <li><a href="{% url 'index' %}"><i class="glyphicon glyphicon-dashboard"></i> 仪表盘</a></li>
+    <li><a href="{% url 'host_list' %}"><i class="glyphicon glyphicon-th-list"></i> 主机列表</a></li>
+    <li><a href="{% url 'module_deploy' %}"><i class="glyphicon glyphicon-th-large"></i> SaltStack</a></li>
+    <li><a href="{% url 'replace_data' %}"><i class="glyphicon glyphicon-repeat"></i> 数据修复</a></li>
+    <li class="active"><a href="{% url 'key_list' %}"><i class="glyphicon glyphicon-tags"></i> MinionKeys<span class="sr-only">(current)</span></a></li>
+    <li><a href="{% url 'record' %}"><i class="glyphicon glyphicon-floppy-disk"></i> 操作记录</a></li>
 {% endblock %}
 {% block content %}
-    <div class="container theme-showcase" role="main">
-
-      <!-- Main jumbotron for a primary marketing message or call to action -->
-      <div class="row">
-            <div class="col-md-12">
-                 <div class="panel panel-default">
-                      <div class="panel-body">
-                          <div class="alert alert-danger" role="alert">
-                                <strong>待接受key列表</strong>
-                          </div>
-                           <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
-                               <tbody>
-                               {% for each_pre in all_minions_pre %}
-                                   <td>{{ each_pre }}</td>
-                                   <td width="180"><a href="/common/key/accept/?node_name={{ each_pre }}" class="btn btn-sm btn-warning">允许</a></td>
-                                    </tr>
-                               {% endfor %}
-                               </tbody>
-						   </table>
-                        <div class="alert alert-info" role="alert">
-                            <strong>已接受key列表</strong>
+    <h5 class="page-header">
+        <ol class="breadcrumb">
+            <li class="active">已接受</li>
+            <li><a href="{% url 'key_unaccept' %}">待接受</a></li>
+            <li><a href="{% url 'key_reject' %}">已拒绝</a></li>
+        </ol>
+    </h5>
+    <form class="form-horizontal form-border" method="get" enctype="multipart/form-data" action="/common/key/delete/">
+    {% csrf_token %}
+        {% for each_dc in all_dc_list %}
+            <div class="col-sm-12">
+              <div class="panel panel-info">
+                <div class="panel-heading">
+                  <h3 class="panel-title">{{ each_dc }}</h3>
+                </div>
+                    <h4>
+                        <div class="panel-body">
+                            {% for each_dc_d,each_host_li in all_dc_hosts.iteritems %}
+                                {% if each_dc_d == each_dc %}
+                                    {% for each_host in each_host_li %}
+                                        <label class="checkbox-inline">
+                                            <input class="icheck" type="checkbox" value="{{ each_host }}" name="reacckeys">
+                                                <span class="label label-default">{{ each_host }}</span>
+                                        </label>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
                         </div>
-                           <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
-                               <tbody>
-                               {% for each_minion in all_minions %}
-                                  <tr>
-                                   <td>{{ each_minion }}</td>
-                                   <td width="180"><a href="/common/key/delete/?node_name={{ each_minion }}" class="btn btn-sm btn-danger">删除</a></td> 
-                                  </tr>
-                               {% endfor %}
-                               </tbody>
-                           </table>
-                           <div class="row">
-                                 <div class="col-xs-6">
-                                       <div class="dataTables_info" id="example_info" role="alert" aria-live="polite" aria-relevant="all"></div>
-                                 </div>
-                                 <div class="col-xs-6">
-                                      <div class="dataTables_paginate paging_simple_numbers" id="exmaple_paginate">
-                                      </div>
-                                 </div>
-                           </div> <!--row end-->
-                         </div>
-                     </div>
-                 </div>
-             </div>
-
-    </div> <!-- /container -->
+                    </h4>
+              </div>
+            </div>
+        {% endfor %}
+        <div class="col-md-offset-3 col-md-6">
+            <button type="submit" class="btn btn-primary btn-block">删除</button>
+        </div>
+    </form>
 {% endblock %}

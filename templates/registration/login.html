@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="Dzh OPS login">
+    <meta name="author" content="Guibin">
+    <link rel="icon" href="/static/img/favicon.ico">
+
+    <title>登陆-移动终端自动化运维平台</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/static/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/static/theme/cover.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script type="text/javascript" async="" src="/static/otherjs/ga.js"></script><script type="text/javascript" charset="UTF-8" src="/static/otherjs/cloud.js"></script><script src="/static/otherjs/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="/static/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="/static/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div class="site-wrapper">
+
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+			<div class="masthead clearfix">
+				<div class="inner">
+				  <h3 class="masthead-brand">移动终端自动化运维平台</h3>
+				</div>
+			</div>
+            {% if form.errors %}
+                <div class="alert alert-danger text-center">用户名或密码错误！</div>
+            {% endif %}
+			<div class="inner cover">
+				<div class="col-sm-offset-3 col-sm-6">
+					<form class="form-signin" action="" method="post">
+						{% csrf_token %}
+						<label for="username" class="sr-only">账号</label>
+						<input type="text" id="username" name="username" class="form-control" placeholder="账号" required="" autofocus="">
+						<label for="password" class="sr-only">密码</label>
+						<input type="password" id="password" name="password" class="form-control" placeholder="密码" required="">
+						<br />
+						<button class="btn btn-primary btn-block" type="submit">登录</button>
+					</form>
+				</div>
+			</div>
+
+          <div class="mastfoot">
+            <div class="inner">
+              <p><a href="mailto:zhaoguibin@gw.com.cn" target="_blank">移动终端</a> &copy; 2015. All rights reserved. </p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="/static/otherjs/jquery.min.js"></script>
+    <script src="/static/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="/static/otherjs/docs.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/static/otherjs/ie10-viewport-bug-workaround.js"></script>
+  
+
+</body></html>

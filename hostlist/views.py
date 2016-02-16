@@ -6,12 +6,11 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from hostlist.form import *
-from hostlist.models import *
+from hostlist.models import Dzhuser, DataCenter, HostList
 from dzhops.mysql import db_operate
 from dzhops import settings
-#from dzhops.models import *
 
-#@login_required
+@login_required
 def host_list_manage(request,id=None):
     """
     Manage Host List
@@ -59,24 +58,73 @@ def host_list_manage(request,id=None):
             "action": action,
            },context_instance=RequestContext(request))
 
-#@login_required
+@login_required
 def host_list(request):
     """
-    List all Hosts
+    Show hosts for data center or engineer
     """
-    #user = request.user
-    all_host = HostList.objects.all()    
-    paginator = Paginator(all_host,10)
-    
-    try:
-        page = int(request.GET.get('page','1'))
-    except ValueError:
-        page = 1
+    user = request.user
 
-    try:
-        all_host = paginator.page(page)
-    except :
-        all_host = paginator.page(paginator.num_pages)
- 
-    return render_to_response('host_list.html', {'all_host_list': all_host, 'page': page, 'paginator':paginator})
+    dcs_list = []
+    #eng_list = []
+
+    all_datacenters = DataCenter.objects.all()
+    for dc in all_datacenters:
+        dcs_list.append(dc.dccn)
+    #all_engineers = Dzhuser.objects.all()
+    #for eng in all_engineers:
+    #    eng_list.append(eng.engineer)
+
+    dcs_list.sort()
+    #eng_list.sort()
+
+    return render_to_response(
+        'host_list.html',
+        {'all_dcs_list': dcs_list},
+        context_instance=RequestContext(request)
+    )
+
+@login_required
+def engineerList(request):
+    """
+    Show hosts for engineer
+    """
+    user = request.user
+
+    eng_list = []
+
+    all_engineers = Dzhuser.objects.all()
+    for eng in all_engineers:
+        eng_list.append(eng.engineer)
+
+    eng_list.sort()
+
+    return render_to_response(
+        'host_list_engineer.html',
+        {'all_eng_list': eng_list},
+        context_instance=RequestContext(request)
+    )
+
+
+@login_required
+def showList(request):
+    '''
+    show datacenter list or engineer list;
+    :param request: datacenter='测试机房1' or engineer = '赵贵斌';
+    :return: mysql select * from host_list where datacenter='测试机房1' or engineer = '赵贵斌';
+    '''
+    if 'datacenter' in request.GET:
+        dc = request.GET.get('datacenter')
+        result = HostList.objects.filter(dccn=dc).order_by('engineer', 'ip')
+    elif 'engineer' in request.GET:
+        eng = request.GET.get('engineer')
+        result = HostList.objects.filter(engineer=eng).order_by('dccn', 'ip')
+    else:
+        pass
+
+    return render_to_response(
+        'show_list.html',
+        {'db_result': result},
+        context_instance=RequestContext(request)
+    )
 

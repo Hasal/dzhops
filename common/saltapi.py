@@ -71,9 +71,19 @@ class SaltAPI(object):
         ret = content['return'][0][tgt]
         return ret
 
-    def remote_execution(self,tgt,fun,arg):
+    def remote_execution(self,arg):
         ''' Command execution with parameters '''        
-        params = {'client': 'local', 'tgt': tgt, 'fun': fun, 'arg': arg}
+        params = {'client': 'local', 'tgt': '*', 'fun': 'cmd.run', 'arg': arg}
+        obj = urllib.urlencode(params)
+        #obj, number = re.subn("arg\d", 'arg', obj)
+        #self.salt_login()
+        content = self.postRequest(obj)
+        ret = content['return'][0]
+        return ret
+
+    def list_remote_execution(self,tgt,arg):
+        ''' Command execution with parameters '''
+        params = {'client': 'local', 'tgt': tgt, 'fun': 'cmd.run', 'arg': arg, 'expr_form': 'list'}
         obj = urllib.urlencode(params)
         #obj, number = re.subn("arg\d", 'arg', obj)
         #self.salt_login()
@@ -98,9 +108,68 @@ class SaltAPI(object):
         content = self.postRequest(obj)
         return content
 
+    def masterToMinion(self,tgt,fun,arg):
+        '''
+
+        '''
+        params = {'client': 'local', 'tgt': tgt, 'fun': fun, 'arg': arg}
+        obj = urllib.urlencode(params)
+        #self.salt_login()
+        content = self.postRequest(obj)
+        return content
+
     def async_deploy(self,tgt,arg):
-        ''' Asynchronously send a command to connected minions '''
-        params = {'client': 'local_async', 'tgt': tgt, 'fun': 'state.sls', 'arg': arg}
+        ''' Asynchronously send a command to connected minions
+            tgt is a list,for example 'zhaogb-201, zhaogb-202, zhaogb-203, ...'
+        '''
+        params = {'client': 'local_async', 'tgt': tgt, 'fun': 'state.sls', 'arg': arg, 'expr_form': 'list'}
+        obj = urllib.urlencode(params)
+        #self.salt_login()
+        content = self.postRequest(obj)
+        jid = content['return'][0]['jid']
+        return jid
+
+    def async_deploy_all(self,arg):
+        '''
+        Asynchronously send a command to connected minions
+        tgt is a star,for example '*'
+        '''
+        params = {'client': 'local_async', 'tgt': '*', 'fun': 'state.sls', 'arg': arg}
+        obj = urllib.urlencode(params)
+        #self.salt_login()
+        content = self.postRequest(obj)
+        jid = content['return'][0]['jid']
+        return jid
+
+    def async_deploy_fun(self, tgt, fun, arg):
+        '''
+            tgt is a list,for example 'zhaogb-201, zhaogb-202, zhaogb-203, ...'
+        '''
+        params = {'client': 'local_async', 'tgt': tgt, 'fun': fun, 'arg': arg, 'expr_form': 'list'}
+        obj = urllib.urlencode(params)
+        #self.salt_login()
+        content = self.postRequest(obj)
+        jid = content['return'][0]['jid']
+        return jid
+
+    def masterToMinionContent(self, tgt, fun, arg):
+        '''
+            return Content, not jid;
+            tgt is a list,for example 'zhaogb-201, zhaogb-202, zhaogb-203, ...'
+        '''
+        params = {'client': 'local', 'tgt': tgt, 'fun': fun, 'arg': arg, 'expr_form': 'list'}
+        obj = urllib.urlencode(params)
+        content = self.postRequest(obj)
+        result = content['return'][0]
+        return result
+
+
+    def async_deploy_fun_all(self, fun, arg):
+        '''
+        Asynchronously send a command to connected minions
+        tgt is a star,for example '*'
+        '''
+        params = {'client': 'local_async', 'tgt': '*', 'fun': fun, 'arg': arg}
         obj = urllib.urlencode(params)
         #self.salt_login()
         content = self.postRequest(obj)
@@ -114,7 +183,8 @@ class SaltAPI(object):
         #self.salt_login()
         content = self.postRequest(obj)
         jid = content['return'][0]['jid']
-        return jid 
+        return jid
+
     def saltCmd(self, params):
         obj = urllib.urlencode(params)
 #        obj, number = re.subn("arg\d", 'arg', obj)
@@ -123,11 +193,12 @@ class SaltAPI(object):
  
 def main():
     #以下是用来测试saltAPI类的部分
-    #sapi = saltAPI()
+    #sapi = SaltAPI()
     #params = {'client':'local', 'fun':'test.ping', 'tgt':'*'}
     #params = {'client':'local', 'fun':'test.ping', 'tgt':'某台服务器的key'}
     #params = {'client':'local', 'fun':'test.echo', 'tgt':'某台服务器的key', 'arg1':'hello'}
     #params = {'client':'local', 'fun':'test.ping', 'tgt':'某组服务器的组名', 'expr_form':'nodegroup'}
+    #params = {'client':'local', 'fun':'test.ping', 'tgt':'zhaogb-201, zhaogb-202, ...', 'expr_form':'list'}
     #test = sapi.saltCmd(params)
     #print test
     pass

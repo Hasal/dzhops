@@ -1,134 +1,149 @@
 {% extends "base.html" %}
-{% load spacify %}
+{% load myfilter %}
 {% block title %}模块部署-移动终端自动化运维平台{% endblock %}
 {% block nav %}
-    <li><a href="{% url 'key_list' %}">认证信息</a></li>
-    <li class="active"><a href="{% url 'module_deploy' %}">模块部署</a></li>
-    <li><a href="{% url 'module_update' %}">模块更新</a></li>
-    <li><a href="{% url 'remote_execution' %}">远程操作</a></li>
-    <li><a href="{% url 'host_list' %}">主机列表</a></li>
+    <li><a href="{% url 'index' %}"><i class="glyphicon glyphicon-dashboard"></i> 仪表盘</a></li>
+    <li><a href="{% url 'host_list' %}"><i class="glyphicon glyphicon-th-list"></i> 主机列表</a></li>
+    <li class="active"><a href="{% url 'module_deploy' %}"><i class="glyphicon glyphicon-th-large"></i> SaltStack<span class="sr-only">(current)</span></a></li>
+    <li><a href="{% url 'replace_data' %}"><i class="glyphicon glyphicon-repeat"></i> 数据修复</a></li>
+    <li><a href="{% url 'key_list' %}"><i class="glyphicon glyphicon-tags"></i> MinionKeys</a></li>
+    <li><a href="{% url 'record' %}"><i class="glyphicon glyphicon-floppy-disk"></i> 操作记录</a></li>
 {% endblock %}
 {% block content %}
-    <div class="container theme-showcase" role="main">
-
-      <!-- Main jumbotron for a primary marketing message or call to action -->
-
-       <div class="row">
-            <div class="col-md-12">
-                 <div class="panel panel-default">
-                      <div class="panel-body">
-                             <form class="form-horizontal form-border" method="post" enctype="multipart/form-data" action="/common/module/deploy/?action=deploy">
-                                    {% csrf_token %}
-                                    <div class="form-group">
-                                        <label class="col-md-1 control-label">目标主机</label>
-                                        <div class="col-md-11">
-                                            <input type="text" class="form-control" name="tgt" value={{ tgt }}>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                          <label class="col-md-1 control-label">安装模块</label>
-                                          <div class="col-md-11">
-                                               <label class="checkbox-inline">
-<!--
-                                                  <input class="icheck" type="checkbox" checked="" value="install.init" name="module">初始化</label>
--->    
-                                                  <input class="icheck" type="checkbox"  value="install.init" name="module">初始化</label>
-                                           <label class="checkbox-inline">
-                                                   <input class="icheck" type="checkbox" value="install.mobile" name="module">行情</label>
-                                               <label class="checkbox-inline">
-                                                   <input class="icheck" type="checkbox" value="install.manager" name="module">调度</label>
-                                               <label class="checkbox-inline">
-                                                   <input class="icheck" type="checkbox" value="install.info" name="module">资讯</label>
-                                               <label class="checkbox-inline">
-                                                   <input class="icheck" type="checkbox" value="install.acd" name="module">账号代理</label>
-                                               <label class="checkbox-inline">
-                                                   <input class="icheck" type="checkbox" value="install.monitor" name="module">监控</label>
-                                               <label class="checkbox-inline">
-                                                   <input class="icheck" type="checkbox" value="install.mysql" name="module">MySQL</label>
-                                               <label class="checkbox-inline">
-                                                   <input class="icheck" type="checkbox" value="install.tomcat" name="module">Tomcat+jdk</label>
-                                          </div>
-                                    </div>
-                                    <div class="form-group">
-                                         <input type="hidden" name="mod" value={{ module }}>
-                                         <div class="col-md-offset-11 col-md-12">
-											<!--start-->
-											<!-- Large modal -->
-											<button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#myModal">提交</button>
-											<div class="modal fade" id='myModal' tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" data-backdrop='static' data-keyboard='false'>
-											  <div class="modal-dialog modal-lg">
-												<div class="modal-content">
-											<span style="text-align:center;color:red">
-												  <br />
-												  <h4>命令已经提交，正在执行中...</h4>
-												  <h4>请不要按<strong>&lt;ESC&gt;键</strong></h4>
-												  <h4>请不要对本页进行<strong>刷新、关闭</strong>等操作</h4>
-												  <h4>静候结果，马上返回...</h4>
-													<br />
-													<div class="progress progress-striped active">
-													<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%;">
-													<span class="sr-only">75% 完成</span>
-													</div>
-													</div>
-												  <br />
-											</span>
-												</div>
-											  </div>
-											</div>
-											<!--end-->
-                                         </div>
-                                    </div>
-                                    <div class="form-group">
-                                          <label class="col-md-1 control-label">返回结果</label>
-                                          <div class="col-md-11">
-
-                                              {% if hostsft %}
-                                                <div class="alert alert-success" role="alert">
-                                                  <strong>
-                                                    本次执行对象共{{ hostsft.sum }}台，其中{{ hostsft.rsum }}台返回结果：成功{{hostsft.tr}}台，失败{{hostsft.fa}}台；
-                                                    {% if hostsft.unrestr %}
-                                                    未返回结果的有以下{{hostsft.unre}}台：{{ hostsft.unrestr }}
-                                                    {% endif %}
-                                                  </strong> 
-                                                </div>
-                                              {% endif %}
-
-                                                {% for each_ret,each_val in ret.items %}
-                                                <!-- Button trigger modal -->
-												{% if each_val.status == 'True' %}
-													<button type="button" class="btn btn-info" data-toggle="modal" data-target="#{{ each_ret }}">
-												{% else %}
-													<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#{{ each_ret }}">
-												{% endif %}
-
-														{{ each_ret }}
-													</button>
-
-                                                <!-- Modal -->
-                                                <div class="modal fade" id="{{ each_ret }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                                  <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                      <div class="modal-header">
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                                        <h4 class="modal-title" id="myModalLabel">{{ each_ret }}</h4>
-                                                      </div>
-                                                      <div class="modal-body">
-                                                        {{ each_val.cont|linebreaksbr|spacify|safe }}
-                                                      </div>
-                                                      <div class="modal-footer">
-                                                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                                {% endfor %}
-                                          </div>
-                                    </div>
-                             </form>
+    <h5 class="page-header">
+        <ol class="breadcrumb">
+            <li class="active">模块部署</li>
+            <li><a href="{% url 'module_update' %}">配置更新</a></li>
+            <li><a href="{% url 'routine_maintenance' %}">日常维护</a></li>
+            <li><a href="{% url 'remote_execution' %}">远程操作</a></li>
+        </ol>
+    </h5>
+   <div class="row">
+        <form class="form-horizontal form-border" method="post" enctype="multipart/form-data" action="/common/module/deploy/">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="col-md-offset-1 col-md-1 control-label">目标主机</label>
+                <div class="col-md-9">
+                    <input type="text" class="form-control" name="tgt" value={{ tgt }}>
+                </div>
+            </div>
+            <div class="form-group">
+                  <label class="col-md-offset-1 col-md-1 control-label">目标机房</label>
+                  <div class="col-md-9">
+                       <label class="checkbox-inline">
+                           <input class="icheck" type="checkbox" value="*" name="datacenter">全部服务器</label>
+                        {% for dcen_li in dcen_list %}
+                            {% for dcen,dccn in data_centers.iteritems %}
+                                {% if dcen == dcen_li %}
+                                    <label class="checkbox-inline">
+                                        <input class="icheck" type="checkbox" value="{{ dcen }}" name="datacenter">{{ dccn }}</label>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                  </div>
+            </div>
+            <div class="form-group">
+                  <label class="col-md-offset-1 col-md-1 control-label">安装模块</label>
+                  <div class="col-md-9">
+                      {% for sls in sls_list %}
+                        {% for sls_key,mod in sls_mod_dict.iteritems %}
+                            {% if sls == sls_key %}
+                                <label class="radio-inline">
+                                  <input class="icheck" type="radio"  value="{{ sls }}" name="module">{{ mod }}
+                                </label>
+                            {% endif %}
+                        {% endfor %}
+                      {% endfor %}
+                  </div>
+            </div>
+            <div class="form-group">
+                <!--
+                 <input type="hidden" name="mod" value={{ module }}>
+                 <input type="hidden" name="mod2" value={{ datacenter }}>
+                 -->
+                 <div class="col-md-offset-10 col-md-1">
+                    <!--start-->
+                    <!-- Large modal -->
+                    <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#myModal">提交</button>
+                    <div class="modal fade" id='myModal' tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" data-backdrop='static' data-keyboard='false'>
+                      <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                    <span style="text-align:center;color:red">
+                          <br />
+                          <h4>命令已经提交，正在执行中...</h4>
+                          <h4>请不要按<strong>&lt;ESC&gt;键</strong></h4>
+                          <h4>请不要对本页进行<strong>刷新、关闭</strong>等操作</h4>
+                          <h4>静候结果，马上返回...</h4>
+                            <br />
+                            <div class="progress progress-striped active">
+                            <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%;">
+                            <span class="sr-only">75% 完成</span>
+                            </div>
+                            </div>
+                          <br />
+                    </span>
+                        </div>
                       </div>
+                    </div>
+                    <!--end-->
                  </div>
             </div>
-       </div>
+            <div class="form-group">
+                {% if errors %}
+                    <div class="col-md-offset-1 col-md-9">
+                      {% for error in errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                            <span class="sr-only">Error:</span>
+                            {{ error }}
+                        </div>
+                      {% endfor %}
+                    </div>
+                {% endif %}
+                {% if ret %}
+                  <label class="col-md-offset-1 col-md-1 control-label">返回结果</label>
+                  <div class="col-md-9">
+                      {% if hostsft %}
+                        <div class="alert alert-success" role="alert">
+                          <strong>
+                            本次执行对象共{{ hostsft.sum }}台，其中{{ hostsft.rsum }}台返回结果：成功{{hostsft.tr}}台，失败{{hostsft.fa}}台；
+                            {% if hostsft.unrestr %}
+                            未返回结果的有以下{{hostsft.unre}}台：{{ hostsft.unrestr }}
+                            {% endif %}
+                          </strong>
+                        </div>
+                      {% endif %}
 
-    </div> <!-- /container -->
+                        {% for each_ret,each_val in ret.items %}
+                        <!-- Button trigger modal -->
+                        <div class="col-md-3">
+                            {% if each_val.status == 'True' %}
+                                <button type="button" class="btn btn-info btn-block" data-toggle="modal" data-target="#{{ each_ret|cut:'.' }}">{{ each_ret }}</button>
+                            {% else %}
+                                <button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#{{ each_ret|cut:'.' }}">{{ each_ret }}</button>
+                            {% endif %}
+                        </div>
+                        <!-- Modal -->
+                        <div class="modal fade" id="{{ each_ret|cut:'.' }}" " tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">{{ each_ret }}</h4>
+                              </div>
+                              <div class="modal-body">
+                                {{ each_val.cont|linebreaksbr|spacify|safe }}
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {% endfor %}
+                  </div>
+                {% endif %}
+            </div>
+        </form>
+   </div>
 {% endblock %}

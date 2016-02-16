@@ -4,8 +4,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="DzhOPS(当你看到这个，我想告诉你的是，我根本就不会写前端!)">
+    <meta name="author" content="Guibin">
     <link rel="icon" href="/static/img/favicon.ico">
 
     <title>{% block title %}{% endblock %}</title>
@@ -16,7 +16,7 @@
     <link href="/static/bootstrap/3.3.4/css/bootstrap-theme.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="/static/theme/theme.css" rel="stylesheet">
+    <link href="/static/theme/dashboard.css" rel="stylesheet">
 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -24,15 +24,15 @@
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
-      <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+      <script src="/static/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="/static/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-  <style type="text/css">#yddContainer{display:block;font-family:Microsoft YaHei;position:relative;width:100%;height:100%;font-size:12px;border:1px solid #4b7598;background:#fff;}#yddTop{display:block;height:22px;cursor:move;border-bottom: 1px solid #d7e3eb; background: #e1f1fb;}#yddTopBorderlr{display:block;position:static;height:22px;line-height:22px;padding:0 28px;font-size:12px;color:#5079bb;font-weight:bold;}#yddWrapper .ydd-icon{display: inline-block; position: absolute; left: 5px; top: 2px; width: 17px; height: 17px;background:url(chrome-extension://chgkpfgnhlojjpjchjcbpbgmdnmfmmil/icon-yd-dict.png) no-repeat;}.ydd-close{display: inline-block; width: 20px; height: 22px; line-height: 22px; font-size: 16px; position: absolute; right: 0; padding-left: 4px; text-decoration: none!important; cursor: pointer;}#yddKeyTitle{float:left;text-decoration:none}#yddMiddle{display:block;margin-bottom:10px}.ydd-tabs{display:block;margin:5px 0;padding:0 5px;height:18px;border-bottom:1px solid}.ydd-tab{display:block;float:left;height:18px;margin:0 5px -1px 0;padding:0 4px;line-height:18px;border:1px solid;border-bottom:none}.ydd-trans-container{display:block;line-height:160%}.ydd-trans-container a{text-decoration:none;}#yddBottom{position:absolute;bottom:0;left:0;width:100%;height:22px;line-height:22px;overflow:hidden;background-position:left -22px}.ydd-padding010{padding:0 10px}#yddWrapper{-webkit-user-drag:element;color:#252525;z-index:10001;box-shadow: 2px 2px 4px gray;}#yddWrapper a,#yddWrapper a:hover,#yddWrapper a:visited{color:#50799b}#yddWrapper .ydd-tabs{color:#959595}.ydd-tabs,.ydd-tab{background:#fff;border-color:#d5e7f3}#yddBottom{color:#363636}#yddWrapper{min-width:250px;max-width:400px;}#ydd-voice{margin-left:2px;height:15px;width:15px}#ydd-voice object{vertical-align: top;}</style></head>
+  </head>
 
-  <body role="document">
-    <!-- Fixed navbar -->
-	<nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
             <span class="sr-only">Toggle navigation</span>
@@ -43,47 +43,51 @@
           <a class="navbar-brand" href="{% url 'index' %}">移动终端自动化运维平台</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-          
-                {% block nav %}{% endblock %}
-                
-                <li class="dropdown">
-                  <a href="./utils.html" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">工具箱<span class="caret"></span></a>
-                  <ul class="dropdown-menu" role="menu">
-                    <li><a href="#">授权处理（暂不可用）</a></li>
-                    <li><a href="#">信息采集（暂不可用）</a></li>
-                    <li><a href="#">其他功能（待添加）</a></li>
-                  </ul>
-                </li>
-            </ul>
-
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-              
-                {% if user.is_authenticated %}
-                {{ user.username }}
-                  <span class="caret"></span></a>
-                  <ul class="dropdown-menu" role="menu">
-                    <li><a href="/accounts/profile">概况</a></li>
-                    <li class="divider"></li>
-                    <li><a href="/accounts/logout">退出</a></li>
-                  </ul>
-                {% else %} 
-                登录
-                </a>
-                {% endif %}
-              
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+					{% if user.is_authenticated %}
+						<li><a href="/accounts/logout">退出</a></li>
+					{% else %} 
+						登录
+					{% endif %}
+				</a>  
             </li>
           </ul>
-
-        </div><!--/.nav-collapse -->
+        </div>
       </div>
     </nav>
-      
-    {% block content %}{% endblock %}
-    {% block footer %}{% endblock %}
 
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+			<div class="media user-media bg-dark dker">
+				<div class="user-media-toggleHover">
+					<span class="fa fa-user"></span> 
+				</div>
+				<div class="user-wrapper bg-dark">
+					<img class="media-object img-circle user-img" width="58" height="58" alt="User Picture" src="/static/img/{{ user.username }}.jpg">
+					<div class="media-body">
+						{% if user.is_authenticated %}
+							<strong class="font-bold"><a href="/accounts/profile">{{ user.username }}</a></strong>
+						{% else %} 
+							登录
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			<div>
+				<ul class="nav nav-sidebar">
+					<li><a></a></li>
+					{% block nav %}{% endblock %}
+				</ul>
+			</div>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+			{% block content %}{% endblock %}
+        </div>
+      </div>
+    </div>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}主机列表-移动终端自动化运维平台{% endblock %}
+{% block nav %}
+    <li><a href="{% url 'index' %}"><i class="glyphicon glyphicon-dashboard"></i> 仪表盘</a></li>
+    <li><a href="{% url 'host_list' %}"><i class="glyphicon glyphicon-th-list"></i> 主机列表</a></li>
+    <li><a href="{% url 'module_deploy' %}"><i class="glyphicon glyphicon-th-large"></i> SaltStack</a></li>
+    <li><a href="{% url 'replace_data' %}"><i class="glyphicon glyphicon-repeat"></i> 数据修复</a></li>
+    <li><a href="{% url 'key_list' %}"><i class="glyphicon glyphicon-tags"></i> MinionKeys</a></li>
+    <li class="active"><a href="{% url 'record' %}"><i class="glyphicon glyphicon-floppy-disk"></i> 操作记录<span class="sr-only">(current)</span></a></li>
+{% endblock %}
+{% block content %}
+    <h5 class="page-header">
+        <ol class="breadcrumb">
+            <li class="active">操作记录</li>
+            <li><a href="{% url 'record_detail' %}">详细记录</a></li>
+        </ol>
+    </h5>
+    <div class="row">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>时间</th>
+                    <th>用户</th>
+                    <th>操作</th>
+                    <th>目标</th>
+                    <th>jid</th>
+                </tr>
+            </thead>
+            {% if posts %}
+                <tbody>
+                    {% for row_record in posts.object_list %}
+                        <tr>
+                            <td>{{ posts.start_index|add:forloop.counter0 }}</td>
+                            <td>{{ row_record.nowtime|date:"Y-m-d H:i:s" }}</td>
+                            <td>{{ row_record.username }}</td>
+                            <td>{{ row_record.user_operate }}</td>
+                            <td>{{ row_record.simple_tgt }}</td>
+                            <td><a href="/common/record/detail/?jid={{ row_record.jid }}">{{ row_record.jid }}</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            {% endif %}
+        </table>
+        <nav>
+            <ul class="pager">
+                {% if posts.has_previous %}
+                    <li class="previous"><a href="?page={{ posts.previous_page_number }}"><span aria-hidden="true">&larr;</span>前一页</a></li>
+                {% else %}
+                    <li class="previous disabled"><a><span aria-hidden="true">&larr;</span>前一页</a></li>
+                {% endif %}
+                <li><a>第{{ posts.number }}页/共{{ posts.paginator.num_pages }}页</a></li>
+                {% if posts.has_next %}
+                    <li class="next"><a href="?page={{ posts.next_page_number }}">下一页<span aria-hidden="true">&rarr;</span></a></li>
+                {% else %}
+                    <li class="next disabled"><a>下一页<span aria-hidden="true">&rarr;</span></a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+{% endblock %}

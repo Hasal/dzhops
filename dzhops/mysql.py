@@ -33,7 +33,8 @@ class db_operate:
                 unret[row[0]] = val
                 ret.update(unret)
         except MySQLdb.Error,e:
-            unret['MysqlErro'] = e
+            unret['ErrorNum'] = e[0]
+            unret['ErrorCon'] = e[1]
             ret.undate(unret)
 
         return ret

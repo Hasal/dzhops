@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}移动终端自动化运维平台{% endblock %}
+{% block nav %}
+    <li><a href="{% url 'index' %}"><i class="glyphicon glyphicon-dashboard"></i> 仪表盘<span class="sr-only">(current)</span></a></li>
+    <li><a href="{% url 'host_list' %}"><i class="glyphicon glyphicon-th-list"></i> 主机列表</a></li>
+    <li><a href="{% url 'module_deploy' %}"><i class="glyphicon glyphicon-th-large"></i> SaltStack</a></li>
+    <li><a href="{% url 'replace_data' %}"><i class="glyphicon glyphicon-repeat"></i> 数据修复</a></li>
+    <li><a href="{% url 'key_list' %}"><i class="glyphicon glyphicon-tags"></i> MinionKeys</a></li>
+    <li><a href="{% url 'record' %}"><i class="glyphicon glyphicon-floppy-disk"></i> 操作记录</a></li>
+{% endblock %}
+{% block content %}
+    <h5 class="page-header">
+        {{ user.username }}
+        已登录
+        <p><a href="{% url 'index' %}">返回首页</a></p>
+    </h5>
+    <div class="row">
+        <p><h4>修改密码</h4></p>
+        {% if tips %}
+            <div class="col-md-offset-1 col-md-10">
+                <div class="well well-sm">{{ tips }}</div>
+            </div>
+        {% endif %}
+        <form class="form-horizontal form-border" method="post" enctype="multipart/form-data" action="/accounts/profile/">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="col-md-2 control-label">原密码</label>
+                <div class="col-md-3">
+                    {{ form.password_old }}
+                    {{ form.password_old.errors }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label">新密码</label>
+                <div class="col-md-3">
+                    {{ form.password_new }}
+                    {{ form.password_new.errors }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label">新密码确认</label>
+                <div class="col-md-3">
+                    {{ form.password_new_again }}
+                    {{ form.password_new_again.errors }}
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-4 col-md-1">
+                    <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

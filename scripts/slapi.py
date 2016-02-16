@@ -4,7 +4,7 @@
 # version: 0.01
 
 import sys,MySQLdb,urllib
-sys.path.append('/var/www/dzhops')
+sys.path.append('/opt/dzhops')
 from dzhops import settings
 from common.saltapi import SaltAPI
 
@@ -33,7 +33,8 @@ try:
     ret['num_minidown'] = len(mini_down)
     ret['num_miniall'] = ret['num_miniup'] + ret['num_minidown']
 
-except Exception:
+except Exception,e:
+    print str(e)
     ret['num_mini'] = '0'
     ret['num_minipre'] = '0'
     ret['num_minirej'] = '0'
@@ -43,7 +44,7 @@ except Exception:
     ret['num_miniall'] = '0'
 
 conf = settings.DATABASES['default']
-mikey_sql = '''INSERT INTO `minikeys` 
+mikey_sql = '''INSERT INTO `index_minikeys`
         (`nowtime`,`miniall`,`minion`,`miniout`,`keyall`,`keypre`,`keyrej`) 
         VALUES 
         (now(), %s, %s, %s, %s, %s, %s)'''

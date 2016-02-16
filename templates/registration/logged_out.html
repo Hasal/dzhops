@@ -1,0 +1,6 @@
+{% if user.is_authenticated %}
+{{ user.username }}
+登录
+{% else %} 
+您已经退出
+{% endif %}

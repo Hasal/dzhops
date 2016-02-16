@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}主机列表-移动终端自动化运维平台{% endblock %}
+{% block nav %}
+    <li><a href="{% url 'index' %}"><i class="glyphicon glyphicon-dashboard"></i> 仪表盘</a></li>
+    <li class="active"><a href="{% url 'host_list' %}"><i class="glyphicon glyphicon-th-list"></i> 主机列表<span class="sr-only">(current)</span></a></li>
+    <li><a href="{% url 'module_deploy' %}"><i class="glyphicon glyphicon-th-large"></i> SaltStack</a></li>
+    <li><a href="{% url 'replace_data' %}"><i class="glyphicon glyphicon-repeat"></i> 数据修复</a></li>
+    <li><a href="{% url 'key_list' %}"><i class="glyphicon glyphicon-tags"></i> MinionKeys</a></li>
+    <li><a href="{% url 'record' %}"><i class="glyphicon glyphicon-floppy-disk"></i> 操作记录</a></li>
+{% endblock %}
+{% block content %}
+    <h5 class="page-header">
+        <ol class="breadcrumb">
+            <li class="active">主机列表</li>
+        </ol>
+    </h5>
+    <div class="row">
+        {% if db_result %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>IP地址</th>
+                        <th>主机名</th>
+                        <th>MinionID</th>
+                        <th>运营商</th>
+                        <th>类别</th>
+                        <th>地区</th>
+                        <th>机房</th>
+                        <th>维护人员</th>
+                        <th>MAC地址</th>
+                        <th>主行情源</th>
+                        <th>备行情源</th>
+                        <th>授权日期</th>
+                        <th>授权状态</th>
+                        <th>备注</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for all_host in db_result %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ all_host.ip }}</td>
+                            <td>{{ all_host.hostname }}</td>
+                            <td>{{ all_host.minionid }}</td>
+                            <td>{{ all_host.nocn }}</td>
+                            <td>{{ all_host.catagorycn }}</td>
+                            <td>{{ all_host.pacn }}</td>
+                            <td>{{ all_host.dccn }}</td>
+                            <td>{{ all_host.engineer }}</td>
+                            <td>{{ all_host.macaddr }}</td>
+                            <td>{{ all_host.zsourceip }}</td>
+                            <td>{{ all_host.bsourceip }}</td>
+                            <td>{{ all_host.licdate }}</td>
+                            <td>{{ all_host.licstatus }}</td>
+                            <td>{{ all_host.remark }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}
