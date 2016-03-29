@@ -16,15 +16,15 @@
 + 网卡流量图使用rrdtool(v1.3.8)工具
 
 ##dzhops更新记录：
-1.SaltStack相关功能（部署、更新、维护、远程）代码重构；
-2.视图文件拆分，新建立app：saltstack/record/managekeys；
-3.使用json格式通过接口传递数据，提高代码重用率；
-4.远程操作的jid及返回结果相关信息入库；
-5.对返回结果按IP进行排序；
-6.返回结果展示按钮增加上下距离；
-7.前端各选项左右对齐；
-8.远程命令执行返回结果显示优化；
-9.取消网卡流量监控；
+    > SaltStack相关功能（部署、更新、维护、远程）代码重构；
+    > 视图文件拆分，新建立app：saltstack/record/managekeys；
+    > 使用json格式通过接口传递数据，提高代码重用率；
+    > 远程操作的jid及返回结果相关信息入库；
+    > 对返回结果按IP进行排序；
+    > 返回结果展示按钮增加上下距离；
+    > 前端各选项左右对齐；
+    > 远程命令执行返回结果显示优化；
+    > 取消网卡流量监控；
 
 ## 功能介绍
 1.**登陆页面**
@@ -44,7 +44,7 @@
 + 远程命令执行
 当对Minion执行操作时，会记录本次目标Minion的数量，然后与返回结果的Minion数量进行对比，找出哪些没有返回结果；当接收到返回结果后，使用bootstrap的模态框显示结果，其中蓝色表示执行成功，红色表示有失败存在，可以点击标签查看详细情况；
 ![模块部署](https://github.com/Hasal/dzhops_picture/blob/master/dzhops_pic/deploy.png)
-![模块部署-返回结果-模态框展开-失败情况](https://github.com/Hasal/dzhops_picture/blob/master/deploy_show.png)
+![模块部署-返回结果-模态框展开-失败情况](https://github.com/Hasal/dzhops_picture/blob/master/dzhops_pic/deploy_show.png)
 ![模块部署-返回结果-模态框展开-成功情况](https://github.com/Hasal/dzhops_picture/blob/master/dzhops_pic/deploy_show_success.png)
 ![远程命令执行](https://github.com/Hasal/dzhops_picture/blob/master/dzhops_pic/execute.png)
 5.**MinionKeys管理**
