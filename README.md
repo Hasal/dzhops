@@ -44,7 +44,7 @@
 + 远程命令执行
 当对Minion执行操作时，会记录本次目标Minion的数量，然后与返回结果的Minion数量进行对比，找出哪些没有返回结果；当接收到返回结果后，使用bootstrap的模态框显示结果，其中蓝色表示执行成功，红色表示有失败存在，可以点击标签查看详细情况；
 ![模块部署](https://github.com/Hasal/dzhops_picture/blob/master/dzhops_pic/deploy.png)
-![模块部署-返回结果-模态框展开-失败情况](https://github.com/Hasal/dzhops_picture/blob/master/dzhops_show.png)
+![模块部署-返回结果-模态框展开-失败情况](https://github.com/Hasal/dzhops_picture/blob/master/deploy_show.png)
 ![模块部署-返回结果-模态框展开-成功情况](https://github.com/Hasal/dzhops_picture/blob/master/dzhops_pic/deploy_show_success.png)
 ![远程命令执行](https://github.com/Hasal/dzhops_picture/blob/master/dzhops_pic/execute.png)
 5.**MinionKeys管理**
@@ -54,4 +54,4 @@
 可以记录每次操作执行人的账号、操作、目标、及jid，并可以通过jid查看该次操作的返回结果详细情况。
 ![操作记录](https://github.com/Hasal/dzhops_picture/blob/master/dzhops_pic/record.png)
 ![操作记录-详细](https://github.com/Hasal/dzhops_picture/blob/master/dzhops_pic/record_detail.png)
-7.**更多细节不再赘述，有待你的发现**
+7.**更多细节不再赘述**
