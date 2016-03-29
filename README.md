@@ -49,7 +49,7 @@
 ![远程命令执行](https://github.com/Hasal/dzhops_picture/blob/master/dzhops_pic/execute.png)
 5.**MinionKeys管理**
 可以分别选择已接受、待接受、已拒绝，并且可以选择机房及维护人员，进行对应的管理操作；
-![MinionKeys管理](https://github.com/Hasal/dzhops_picture/blob/master/dzhops_pic/keys.png)
+![MinionKeys管理](https://github.com/Hasal/dzhops_picture/blob/master/dzhops_pic/manage.png)
 6.**操作记录**
 可以记录每次操作执行人的账号、操作、目标、及jid，并可以通过jid查看该次操作的返回结果详细情况。
 ![操作记录](https://github.com/Hasal/dzhops_picture/blob/master/dzhops_pic/record.png)
