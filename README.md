@@ -28,7 +28,7 @@
 
 ## 功能介绍
 1.**登陆页面**
-![登陆](https://github.com/Hasal/dzhops_picture/blob/master/dzhops_pic/0_login.png)
+![登陆](https://github.com/Hasal/dzhops_picture/blob/master/dzhops_pic/login.png)
 2.**首页**，显示SaltMaster所在服务器及相关组件状态信息
 目前监控数据，都是通过独立的信息采集脚本完成，需要做计划任务。
 ![仪表盘](https://github.com/Hasal/dzhops_picture/blob/master/dzhops_pic/index.png)
