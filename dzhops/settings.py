@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'common',
     'hostlist',
     'replacedata',
+    'saltstack',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -68,10 +69,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'dzhops',
-        'USER': 'dzhops',
+        'USER': '数据库用户名',
         'PORT': 3306,
-        'HOST': '',
-        'PASSWORD': '',
+        'HOST': '192.168.220.201',
+        'PASSWORD': '数据库密码',
     }
 }
 
@@ -102,22 +103,23 @@ TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
 
-RETURNS_MYSQL = {
-    'default':
-    {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'salt',
-        'USER': 'salt',
-        'PORT': 3306,
-        'HOST': '',
-        'PASSWORD': ''
-    }
-}
+# RETURNS_MYSQL = {
+#     'default':
+#     {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'salt',
+#         'USER': 'salt',
+#         'PORT': 3306,
+#         'HOST': '192.168.220.201',
+#         'PASSWORD': 'dzhinternet'
+#     }
+# }
+
 # salt-api setting
 SALT_API = {
-        'url' : '',
-        'user' : '',
-        'password' : ''
+        'url' : 'http://127.0.0.1:18000/',
+        'user' : 'salt-api用户名',
+        'password' : 'salt-api用户密码'
         }
 
 # log setting

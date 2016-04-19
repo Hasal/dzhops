@@ -70,3 +70,27 @@ class ModulesLock(models.Model):
 
     def __unicode__(self):
         return u'%s %s %s' % (self.module, self.status, self.user)
+
+class Jids(models.Model):
+    jid = models.CharField(primary_key=True, max_length=255)
+    load = models.TextField()
+    class Meta:
+        managed = False
+        db_table = 'jids'
+    def __unicode__(self):
+        return u'%s %s' % (self.jid, self.load)
+
+class SaltReturns(models.Model):
+    useless = models.AutoField(primary_key=True)
+    fun = models.CharField(max_length=50)
+    jid = models.CharField(max_length=255)
+    return_field = models.TextField(db_column='return') # Field renamed because it was a Python reserved word.
+    id = models.CharField(max_length=255)
+    success = models.CharField(max_length=10)
+    full_ret = models.TextField()
+    alter_time = models.DateTimeField()
+    class Meta:
+        managed = False
+        db_table = 'salt_returns'
+    def __unicode__(self):
+        return u'%s %s %s' % (self.jid, self.id, self.return_field)

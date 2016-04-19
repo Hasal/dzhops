@@ -2,11 +2,11 @@
 
 from django import forms
 
-class UploadImageForms(forms.Form):
+class UploadFileForm(forms.Form):
     '''
     Upload user picture for profile web.
     '''
-    user_image = forms.ImageField(required=False)
+    file = forms.FileField(required=False)
 
 class ChangePasswordForms(forms.Form):
     '''

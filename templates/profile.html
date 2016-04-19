@@ -10,9 +10,10 @@
 {% endblock %}
 {% block content %}
     <h5 class="page-header">
-        {{ user.username }}
-        已登录
-        <p><a href="{% url 'index' %}">返回首页</a></p>
+        <ol class="breadcrumb">
+            <li class="active">修改密码</li>
+            <li><a href="{% url 'upload' %}">上传头像</a></li>
+        </ol>
     </h5>
     <div class="row">
         <p><h4>修改密码</h4></p>

@@ -1,26 +1,23 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render_to_response
-from django.template import RequestContext
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
-from django.core.paginator import Paginator, InvalidPage, EmptyPage
-from django.contrib.auth.decorators import login_required
-from common.saltapi import SaltAPI
-from dzhops import settings
-from dzhops.mysql import db_operate
-from hostlist.models import HostList, Dzhuser, DataCenter, NetworkOperator, ProvinceArea, Catagory
-from common.models import OperateRecord, ReturnRecord, DeployModules, ConfigUpdate, CommonOperate, ModulesLock
-import time
 import logging
-import copy
-
-# Import python libs
-from numbers import Number
 import re
+import time
 import json
 
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, InvalidPage, EmptyPage
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+from common.models import OperateRecord, ReturnRecord, DeployModules, ConfigUpdate, CommonOperate, ModulesLock, \
+    SaltReturns
+from common.saltapi import SaltAPI
+from dzhops import settings
+from hostlist.models import HostList, DataCenter, NetworkOperator, ProvinceArea, Catagory
 
 log = logging.getLogger('dzhops')
+
 
 @login_required
 def salt_key_list(request):
@@ -37,7 +34,7 @@ def salt_key_list(request):
         url=settings.SALT_API['url'],
         username=settings.SALT_API['user'],
         password=settings.SALT_API['password'])
-    minions,minions_pre,minions_rej = sapi.list_all_key()
+    minions, minions_pre, minions_rej = sapi.list_all_key()
     minions_set = set(minions)
     minions_pre_set = set(minions_pre)
     minions_rej_set = set(minions_rej)
@@ -59,7 +56,7 @@ def salt_key_list(request):
     return render_to_response(
         'salt_key_list.html',
         {'all_dc_list': dccn_list,
-         'all_dc_hosts' : dc_hosts_keys
+         'all_dc_hosts': dc_hosts_keys
          },
         context_instance=RequestContext(request)
     )
@@ -97,6 +94,7 @@ def salt_delete_key(request):
 
     return HttpResponseRedirect(reverse('key_list'))
 
+
 def rejDeleteKey(request):
     '''
     Delete reject keys;
@@ -115,6 +113,7 @@ def rejDeleteKey(request):
 
     return HttpResponseRedirect(reverse('key_reject'))
 
+
 @login_required
 def salt_key_reject(request):
     """
@@ -129,7 +128,7 @@ def salt_key_reject(request):
         url=settings.SALT_API['url'],
         username=settings.SALT_API['user'],
         password=settings.SALT_API['password'])
-    minions,minions_pre,minions_rej = sapi.list_all_key()
+    minions, minions_pre, minions_rej = sapi.list_all_key()
     minions_rej_set = set(minions_rej)
 
     servers = DataCenter.objects.all()
@@ -149,9 +148,10 @@ def salt_key_reject(request):
     return render_to_response(
         'salt_key_reject.html',
         {'all_dc_list': dccn_list,
-         'all_minions_rej' : dc_hosts_keys},
+         'all_minions_rej': dc_hosts_keys},
         context_instance=RequestContext(request)
     )
+
 
 @login_required
 def salt_key_unaccept(request):
@@ -167,7 +167,7 @@ def salt_key_unaccept(request):
         url=settings.SALT_API['url'],
         username=settings.SALT_API['user'],
         password=settings.SALT_API['password'])
-    minions,minions_pre,minions_rej = sapi.list_all_key()
+    minions, minions_pre, minions_rej = sapi.list_all_key()
     minions_pre_set = set(minions_pre)
 
     servers = DataCenter.objects.all()
@@ -186,17 +186,17 @@ def salt_key_unaccept(request):
 
     return render_to_response(
         'salt_key_unaccept.html',
-        {'all_dc_list': dccn_list,'all_minions_pre': dc_hosts_keys },
+        {'all_dc_list': dccn_list, 'all_minions_pre': dc_hosts_keys},
         context_instance=RequestContext(request)
     )
 
 
 def moduleDetection(module, user):
     '''
-    Check whether the module is being used.
-    :param module: 'cmd.run' or other module
-    :param user: 'zhaogb' or other username
-    :return: str or None, str for example: "zhaogb is using cmd.run"
+    检测如state.sls/cmd.run等模块是否被占用；
+    :param module: 'cmd.run' 或 'state.sls'
+    :param user: 'zhaogb' 或其他用户名；
+    :return: 如果模块被占用，则返回如 "zhaogb is using cmd.run"；如果模块没有被占用，则返回空字符串；
     '''
     log.debug('%s detection module %s occupied' % (user, module))
     try:
@@ -217,12 +217,15 @@ def moduleDetection(module, user):
 
     return status
 
+
 def moduleLock(module, user):
     '''
-    the module lock.
-    :return:
+    将模块锁定；
+    :param module: 'cmd.run' 或 'state.sls'
+    :param user: 'zhaogb' 或其他用户名；
+    :return: None
     '''
-    log.debug('%s Lock Module : %s' % (user,module))
+    log.debug('%s Lock Module : %s' % (user, module))
     try:
         module_exist = ModulesLock.objects.get(module=module)
         module_status = module_exist.status
@@ -241,8 +244,10 @@ def moduleLock(module, user):
 
 def moduleUnlock(module, user):
     '''
-
-    :return:
+    将锁定的模块解锁；
+    :param module: 'cmd.run' 或 'state.sls'
+    :param user: 'zhaogb' 或其他用户名；
+    :return: None
     '''
     log.debug('%s Unlock Module %s' % (user, module))
     module_unlock = ModulesLock.objects.get(module=module)
@@ -254,8 +259,8 @@ def moduleUnlock(module, user):
 
 def datacenterToMinionID(datacenter_list):
     '''
-    DataCenter list to minion id list;
-    **Warning**: **Do not judge whether the list is empty!**
+    输入机房英文简称，返回该机房所有minion key组成的集合；
+    **注意**: **这里不会判断输入机房列表参数是否为空，请在传入该参数之前自己判断**
     :param dc_list: ['dctest1', 'dctest2', 'dctest3', ...] or ['*']
     :return: a set, ('zhaogb-201', 'zhaogb-202', 'zhaogb-203', ..., 'zhaogb-nnn')
     '''
@@ -280,10 +285,10 @@ def datacenterToMinionID(datacenter_list):
 
 def targetToMinionID(tgt):
     '''
-    target host to minion id(str -> set);
+    将服务器IP或MinionID字符串转换成由MinionID组成的集合；
     :param tgt: 'zhaogb-201, zhaogb-203,...' or 'zhaogb-*' or 'zh*' or '10.15.*' or 'z*,10*' or '*';
-    :return:1.if * in tgt,return a set include all minion id;
-            2.if 'zhaogb-*' or '10.10.* 'in tgt, return all server minion id for pattern prefix;
+    :return:1.如果‘*’在tgt中，则返回所有MinionID组成的集合;
+            2.如果'zhaogb-*' or '10.10.* '在tgt中, 返回转换、正则匹配到的相关minionid集合;
     '''
 
     target_list = tgt.split(',')
@@ -306,20 +311,36 @@ def targetToMinionID(tgt):
             all_minion_id_list.append(minion_info.minionid)
 
         for target in target_list:
-            target_replace_point = target.replace('.','\.')
-            target_replace_star = target_replace_point.replace('*','.*')
-            target_string = r'%s' % target_replace_star
-            pattern = re.compile(target_string)
-            for minion_ip in all_minion_ip_list:
-                match_ip = pattern.match(minion_ip)
-                if match_ip:
-                    mtach_minion_ip_data = HostList.objects.get(ip=minion_ip)
-                    match_minion_ip_to_id = mtach_minion_ip_data.minionid
-                    minion_ip_to_id_list.append(match_minion_ip_to_id)
-            for minion_id in all_minion_id_list:
-                match_id = pattern.match(minion_id)
-                if match_id:
-                    minion_id_to_id_list.append(minion_id)
+            if '*' in target:
+                target_replace_point = target.replace('.', '\.')
+                target_replace_star = target_replace_point.replace('*', '.*')
+                target_string = r'%s' % target_replace_star
+                pattern = re.compile(target_string)
+                for minion_ip in all_minion_ip_list:
+                    match_ip = pattern.match(minion_ip)
+                    if match_ip:
+                        mtach_minion_ip_data = HostList.objects.get(ip=minion_ip)
+                        match_minion_ip_to_id = mtach_minion_ip_data.minionid
+                        minion_ip_to_id_list.append(match_minion_ip_to_id)
+                for minion_id in all_minion_id_list:
+                    match_id = pattern.match(minion_id)
+                    if match_id:
+                        minion_id_to_id_list.append(minion_id)
+            else:
+                target_replace_none = target.replace('.','')
+                if target_replace_none.isdigit():
+                    try:
+                        mtach_minion_ip_data = HostList.objects.get(ip=target)
+                        match_minion_ip_to_id = mtach_minion_ip_data.minionid
+                        minion_ip_to_id_list.append(match_minion_ip_to_id)
+                    except HostList.DoesNotExist:
+                        log.error('Without this IP on host list. IP:{0}'.format(target))
+                else:
+                    try:
+                        mtach_minion_id_data = HostList.objects.get(minionid=target)
+                        minion_ip_to_id_list.append(target)
+                    except HostList.DoesNotExist:
+                        log.error("MinionID don't exsit. Minion id:{0}".format(target))
 
         minion_ip_to_id_set = set(minion_ip_to_id_list)
         minion_id_to_id_set = set(minion_id_to_id_list)
@@ -328,15 +349,18 @@ def targetToMinionID(tgt):
     return minion_id_set
 
 
-def findJob(minionids_set,jid):
+def findJob(minionids_set, jid):
     '''
-
-    :return:
+    查看发送给Minion的任务，minion是否已经执行完成；
+    minionids_set 目标minion keys 组成的集合；
+    jid 为 salt jid;
+    :return: 没有返回结果的minion keys 组成的集合；
     '''
     target_list_to_str = ','.join(list(minionids_set))
-    log.debug('%s' % str(target_list_to_str))
+    log.debug('target_list: %s' % str(target_list_to_str))
     fun = 'saltutil.find_job'
-    error_tolerant = 0.1
+    #error_tolerant = 0.1
+    diff_send_receive = []
     loop = True
 
     sapi = SaltAPI(
@@ -345,51 +369,52 @@ def findJob(minionids_set,jid):
         password=settings.SALT_API['password'])
 
     while loop:
-        log.debug('into loop start')
+        counter = 0
+        # log.debug('The loop variable')
+        log.debug('into loop start [common.views.findJob]')
         time.sleep(60)
-        find_job_result = sapi.masterToMinionContent(target_list_to_str,fun,jid)
-        log.error('%s' % str(find_job_result))
-        if find_job_result is not None:
-            find_job_result_keys = find_job_result.keys()
-            num_keys = len(find_job_result_keys)
-            log.error('find_job_result_keys: %d' % num_keys)
-            num_minion = len(minionids_set)
-            log.error('minion_set: %d' % num_minion)
-
-            quantity_keys = len(find_job_result_keys)
-            quantity_mini_id = len(minionids_set)
-            quantity_error_tolerant = quantity_mini_id * error_tolerant
-            quantity_unreturn = quantity_mini_id - quantity_keys
-
-            if quantity_keys == quantity_mini_id:
-                finished = []
-                unfinished = []
-                for key, value in find_job_result.iteritems():
-                    log.debug('key: %s ;value: %s' % (key,value))
-                    if value:
-                        unfinished.append(key)
-                        log.debug('unfinished: %s' % str(unfinished))
-                    else:
-                        finished.append(key)
-                        log.debug('finished: %s' % str(finished))
-                if len(unfinished) == 0:
-                    loop = False
-                    log.debug('views:308L %s' % loop)
-                else:
-                    continue
-            elif quantity_unreturn <= quantity_error_tolerant:
-                log.debug('unretunrn: %d;error_tolerant: %d' % (quantity_unreturn,quantity_error_tolerant))
-                loop = False
+        find_job_result = sapi.masterToMinionContent(target_list_to_str, fun, jid)
+        log.debug('find_job_result: %s' % str(find_job_result))
+        find_job_result_set = set(find_job_result.keys())
+        diff_send_receive.extend(list(minionids_set.difference(find_job_result_set)))
+        find_job_result_value = find_job_result.values()
+        for eachDict in find_job_result_value:
+            if eachDict:
+                log.debug('The find job result is Dict, It is values list is Not null.')
+                break
             else:
-                continue
-        else:
-            continue
+                counter += 1
+        if counter == len(find_job_result_set):
+            loop = False
 
-    return loop
+    diff_send_receive_set = set(diff_send_receive)
+
+    return diff_send_receive_set
+
+
+def mysqlReturns(jid):
+    '''
+    通过jid从数据库中查询这次任务的执行结果；
+    :param jid: u'20160217142922771111'
+    :return:{'host1':{'dict_content'},'host2':{'dict_content'},...}
+    '''
+    jid = jid.encode('utf-8')
+    dict_result = {}
+    try:
+        log.debug('Query the database salt_returns for %s' % jid)
+        return_data = SaltReturns.objects.filter(jid=jid)
+        for row in return_data:
+            data_return = json.loads(row.return_field)
+            dict_result[row.id] = data_return
+    except BaseException, e:
+        log.error(str(e))
+
+    return dict_result
+
 
 def outFormat(result):
     '''
-    format out to screen;
+    对从数据库中查询出来的Minion返回结果进行格式化;
     :param result:
         #result = {
         # 'zhaogb-201':
@@ -417,13 +442,13 @@ def outFormat(result):
         #       }
         #    }
         # }
-    :return: colour is str 'True' or 'False', longstrva is a long formated strings;
+    :return: 表示模态框按钮颜色的'True'、'False'是字符串格式, longstrva是一个长字符串;
     '''
     hostfa = 0
     hosttr = 0
     unret = {}
 
-    for ka,va in result.iteritems():
+    for ka, va in result.iteritems():
         # result {'zhaogb-201':{},'zhaobg-202':{}}
         # ka zhaogb-201,zhaogb-202
         # va {'mo_watch':{'comment':'','result':'',...}}
@@ -447,36 +472,35 @@ def outFormat(result):
                     if liva[0] == 'file':
                         if va[kva]['changes'].keys():
                             if ('diff' in va[kva]['changes'].keys()
-                                    and va[kva]['changes']['diff'] != ''):
+                                and va[kva]['changes']['diff'] != ''):
                                 changesStr += u'\n\t对比 : \n\t\t{0}'.format(
-                                        va[kva]['changes']['diff'])
+                                    va[kva]['changes']['diff'])
                             if ('mode' in va[kva]['changes'].keys()
-                                    and va[kva]['changes']['mode'] != ''):
+                                and va[kva]['changes']['mode'] != ''):
                                 changesStr += u'\n\t权限 : \n\t\t{0}'.format(
-                                        va[kva]['changes']['mode'])
+                                    va[kva]['changes']['mode'])
                             if ('diff' not in va[kva]['changes'].keys()
-                                    and 'mode' not in va[kva]['changes'].keys()):
-                                for ck,cv in va[kva]['changes'].iteritems():
+                                and 'mode' not in va[kva]['changes'].keys()):
+                                for ck, cv in va[kva]['changes'].iteritems():
                                     changesStr += u'\n\t{0}'.format(ck)
                                     if ('diff' in va[kva]['changes'][ck].keys()
-                                            and va[kva]['changes'][ck]['diff'] != ''):
+                                        and va[kva]['changes'][ck]['diff'] != ''):
                                         changesStr += u'\n\t\t对比 : \n\t\t\t{0}'.format(cv['diff'])
                                     if ('mode' in va[kva]['changes'][ck].keys()
-                                            and va[kva]['changes'][ck]['mode'] != ''):
+                                        and va[kva]['changes'][ck]['mode'] != ''):
                                         changesStr += u'\n\t\t权限 : \n\t\t\t{0}'.format(cv['mode'])
-
                     elif liva[0] == 'cmd':
                         if ('pid' in va[kva]['changes'].keys()
-                                and va[kva]['changes']['pid'] != ''):
+                            and va[kva]['changes']['pid'] != ''):
                             changesStr += u'\n\tPID : {0}'.format(va[kva]['changes']['pid'])
                         if ('retcode' in va[kva]['changes'].keys()
-                                and va[kva]['changes']['retcode'] != ''):
+                            and va[kva]['changes']['retcode'] != ''):
                             changesStr += u'\n\t返回代码 : {0}'.format(va[kva]['changes']['retcode'])
                         if ('stderr' in va[kva]['changes'].keys()
-                                and va[kva]['changes']['stderr'] != ''):
+                            and va[kva]['changes']['stderr'] != ''):
                             changesStr += u'\n\t错误 : {0}'.format(va[kva]['changes']['stderr'])
                         if ('stdout' in va[kva]['changes'].keys()
-                                and va[kva]['changes']['stdout'] != ''):
+                            and va[kva]['changes']['stdout'] != ''):
                             changesStr += u'\n\t输出 : {0}'.format(va[kva]['changes']['stdout'])
                     else:
                         pass
@@ -491,7 +515,7 @@ def outFormat(result):
                     va[kva]['start_time'],
                     va[kva]['duration'],
                     va[kva]['changes'],
-                    '-'*60)
+                    '-' * 60)
                 longstrva += strva
 
             if False in liv:
@@ -501,8 +525,7 @@ def outFormat(result):
                 colour = 'True'
                 hosttr += 1
             else:
-                pass
-                # error write to logging
+                log.error('Error')
 
             totalStatus = len(liv)
             for livStatus in liv:
@@ -511,8 +534,7 @@ def outFormat(result):
                 elif livStatus == True:
                     trueStatus += 1
                 else:
-                    pass
-                    # error write to logging
+                    log.error('Error')
 
             longstrva += '失败 : {0}\n成功 : {1}\n总计 : {2}'.format(falseStatus, trueStatus, totalStatus)
 
@@ -526,15 +548,21 @@ def outFormat(result):
 
     return unret, hostfa, hosttr
 
+
 @login_required
 def module_deploy(request):
     """
-    deploy (mobile/manager/info..) module
-    out  ret:{'host1':{'cont':'format result','status': colour },...} ,
+    模块部署，比如行情、监控、代理等程序部署；
+    参数：
+        目标Minions或机房、组；
+        需要执行的sls文件；
+    输出：
+    格式如下：
+    ret:{'minion ip':{'cont':'format result','status': colour },...} ,
                 hostsft:{'sum':'','rsum':'','unre':'','unrestr':'','fa':'','tr':''}
     """
 
-    user = request.user
+    user = request.user.username
     result = ''
     ret = {}
     hostsft = {}
@@ -544,6 +572,7 @@ def module_deploy(request):
     errors = []
     sls_list = []
     sls_mod_dict = {}
+    diff_ip_list = []
 
     result_dc = DataCenter.objects.all()
     for dc in result_dc:
@@ -557,7 +586,7 @@ def module_deploy(request):
         sls_list.append(row_data.slsfile)
 
     if request.method == 'POST':
-        check_tgt  = request.POST.get('tgt', '')
+        check_tgt = request.POST.get('tgt', '')
         check_dc_list = request.POST.get('datacenter', '')
         module_detection = moduleDetection('state.sls', user)
         if module_detection:
@@ -574,7 +603,6 @@ def module_deploy(request):
             tgt = request.POST.get('tgt')
             dc_list = request.POST.getlist('datacenter')
             arg = request.POST.get('module')
-            module_lock = moduleLock('state.sls', user)
 
             if tgt:
                 minion_id_from_tgt_set = targetToMinionID(tgt)
@@ -592,11 +620,12 @@ def module_deploy(request):
                     username=settings.SALT_API['user'],
                     password=settings.SALT_API['password'])
                 tgt_list = tgt.split(',')
+                module_lock = moduleLock('state.sls', user)
                 if ('*' in tgt_list) or ('*' in dc_list):
                     jid = sapi.async_deploy_all(arg)
                 else:
                     tgt_list_to_str = ','.join(all_minion_id_set)
-                    jid = sapi.async_deploy(tgt_list_to_str,arg)
+                    jid = sapi.async_deploy(tgt_list_to_str, arg)
 
                 if dc_list:
                     operate_tgt = dc_list[0]
@@ -605,7 +634,7 @@ def module_deploy(request):
                 else:
                     operate_tgt = 'unknown'
 
-                op_time = time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(time.time()))
+                op_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
                 op_user = arg
                 op_tgt = '%s...' % operate_tgt
                 p1 = OperateRecord.objects.create(
@@ -615,12 +644,13 @@ def module_deploy(request):
                     simple_tgt=op_tgt,
                     jid=jid)
 
-                find_job = findJob(all_minion_id_set,jid)
+                find_job = findJob(all_minion_id_set, jid)
 
-                db = db_operate()
-                time.sleep(30)
-                sql = 'select id,`return` from salt_returns where jid=%s'
-                result = db.select_table(settings.RETURNS_MYSQL,sql,str(jid))
+                # db = db_operate()
+                # time.sleep(30)
+                # sql = 'select id,`return` from salt_returns where jid=%s'
+                # result = db.select_table(settings.RETURNS_MYSQL, sql, str(jid))
+                result = mysqlReturns(jid)
 
                 hostsum = len(all_minion_id_set)
                 sumset = all_minion_id_set
@@ -630,8 +660,13 @@ def module_deploy(request):
                 ret, hostfa, hosttr = outFormat(result)
 
                 diffset = sumset.difference(returnset)
+                for eachID in diffset:
+                    hostlist_data = HostList.objects.get(minionid=eachID)
+                    minion_ip = hostlist_data.ip
+                    diff_ip_list.append(minion_ip)
                 hostunre = len(diffset)
-                hostunrestr = ','.join(list(diffset))
+                hostunrestr = ','.join(diff_ip_list)
+                # hostunrestr = diff_ip_list
 
                 hostsft['sum'] = hostsum
                 hostsft['rsum'] = hostrsum
@@ -668,6 +703,7 @@ def module_deploy(request):
         context_instance=RequestContext(request)
     )
 
+
 @login_required
 def module_update(request):
     """
@@ -675,7 +711,7 @@ def module_update(request):
     out  {'host1':{'cont':'format result','status': colour },...}
     """
 
-    user = request.user
+    user = request.user.username
     result = ''
     ret = {}
     hostsft = {}
@@ -685,6 +721,7 @@ def module_update(request):
     errors = []
     sls_list = []
     sls_mod_dict = {}
+    diff_ip_list = []
 
     result_dc = DataCenter.objects.all()
     for dc in result_dc:
@@ -698,7 +735,7 @@ def module_update(request):
         sls_list.append(row_data.slsfile)
 
     if request.method == 'POST':
-        check_tgt  = request.POST.get('tgt', '')
+        check_tgt = request.POST.get('tgt', '')
         check_dc_list = request.POST.get('datacenter', '')
         module_detection = moduleDetection('state.sls', user)
         if module_detection:
@@ -715,7 +752,6 @@ def module_update(request):
             tgt = request.POST.get('tgt')
             dc_list = request.POST.getlist('datacenter')
             arg = request.POST.get('module')
-            module_lock = moduleLock('state.sls', user)
 
             if tgt:
                 minion_id_from_tgt_set = targetToMinionID(tgt)
@@ -733,11 +769,12 @@ def module_update(request):
                     username=settings.SALT_API['user'],
                     password=settings.SALT_API['password'])
                 tgt_list = tgt.split(',')
+                module_lock = moduleLock('state.sls', user)
                 if ('*' in tgt_list) or ('*' in dc_list):
                     jid = sapi.async_deploy_all(arg)
                 else:
                     tgt_list_to_str = ','.join(all_minion_id_set)
-                    jid = sapi.async_deploy(tgt_list_to_str,arg)
+                    jid = sapi.async_deploy(tgt_list_to_str, arg)
 
                 if dc_list:
                     operate_tgt = dc_list[0]
@@ -746,7 +783,7 @@ def module_update(request):
                 else:
                     operate_tgt = 'unknown'
 
-                op_time = time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(time.time()))
+                op_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
                 op_user = arg
                 op_tgt = '%s...' % operate_tgt
                 p1 = OperateRecord.objects.create(
@@ -756,12 +793,13 @@ def module_update(request):
                     simple_tgt=op_tgt,
                     jid=jid)
 
-                find_job = findJob(all_minion_id_set,jid)
+                find_job = findJob(all_minion_id_set, jid)
 
-                db = db_operate()
-                time.sleep(30)
-                sql = 'select id,`return` from salt_returns where jid=%s'
-                result = db.select_table(settings.RETURNS_MYSQL,sql,str(jid))
+                # db = db_operate()
+                # time.sleep(30)
+                # sql = 'select id,`return` from salt_returns where jid=%s'
+                # result = db.select_table(settings.RETURNS_MYSQL, sql, str(jid))
+                result = mysqlReturns(jid)
 
                 hostsum = len(all_minion_id_set)
                 sumset = all_minion_id_set
@@ -771,8 +809,12 @@ def module_update(request):
                 ret, hostfa, hosttr = outFormat(result)
 
                 diffset = sumset.difference(returnset)
+                for eachID in diffset:
+                    hostlist_data = HostList.objects.get(minionid=eachID)
+                    minion_ip = hostlist_data.ip
+                    diff_ip_list.append(minion_ip)
                 hostunre = len(diffset)
-                hostunrestr = ','.join(list(diffset))
+                hostunrestr = ','.join(diff_ip_list)
 
                 hostsft['sum'] = hostsum
                 hostsft['rsum'] = hostrsum
@@ -808,6 +850,7 @@ def module_update(request):
         context_instance=RequestContext(request)
     )
 
+
 @login_required
 def routine_maintenance(request):
     """
@@ -815,7 +858,7 @@ def routine_maintenance(request):
     out  {'host1':{'cont':'format result','status': colour },...}
     """
 
-    user = request.user
+    user = request.user.username
     result = ''
     ret = {}
     hostsft = {}
@@ -825,6 +868,7 @@ def routine_maintenance(request):
     errors = []
     sls_list = []
     sls_mod_dict = {}
+    diff_ip_list = []
 
     result_dc = DataCenter.objects.all()
     for dc in result_dc:
@@ -838,7 +882,7 @@ def routine_maintenance(request):
         sls_list.append(row_data.slsfile)
 
     if request.method == 'POST':
-        check_tgt  = request.POST.get('tgt', '')
+        check_tgt = request.POST.get('tgt', '')
         check_dc_list = request.POST.get('datacenter', '')
         module_detection = moduleDetection('state.sls', user)
         if module_detection:
@@ -855,7 +899,6 @@ def routine_maintenance(request):
             tgt = request.POST.get('tgt')
             dc_list = request.POST.getlist('datacenter')
             arg = request.POST.get('module')
-            module_lock = moduleLock('state.sls', user)
 
             if tgt:
                 minion_id_from_tgt_set = targetToMinionID(tgt)
@@ -873,11 +916,12 @@ def routine_maintenance(request):
                     username=settings.SALT_API['user'],
                     password=settings.SALT_API['password'])
                 tgt_list = tgt.split(',')
+                module_lock = moduleLock('state.sls', user)
                 if ('*' in tgt_list) or ('*' in dc_list):
                     jid = sapi.async_deploy_all(arg)
                 else:
                     tgt_list_to_str = ','.join(all_minion_id_set)
-                    jid = sapi.async_deploy(tgt_list_to_str,arg)
+                    jid = sapi.async_deploy(tgt_list_to_str, arg)
 
                 if dc_list:
                     operate_tgt = dc_list[0]
@@ -886,7 +930,7 @@ def routine_maintenance(request):
                 else:
                     operate_tgt = 'unknown'
 
-                op_time = time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(time.time()))
+                op_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
                 op_user = arg
                 op_tgt = '%s...' % operate_tgt
                 p1 = OperateRecord.objects.create(
@@ -896,12 +940,13 @@ def routine_maintenance(request):
                     simple_tgt=op_tgt,
                     jid=jid)
 
-                find_job = findJob(all_minion_id_set,jid)
+                find_job = findJob(all_minion_id_set, jid)
 
-                db = db_operate()
-                time.sleep(30)
-                sql = 'select id,`return` from salt_returns where jid=%s'
-                result = db.select_table(settings.RETURNS_MYSQL,sql,str(jid))
+                # db = db_operate()
+                # time.sleep(30)
+                # sql = 'select id,`return` from salt_returns where jid=%s'
+                # result = db.select_table(settings.RETURNS_MYSQL, sql, str(jid))
+                result = mysqlReturns(jid)
 
                 hostsum = len(all_minion_id_set)
                 sumset = all_minion_id_set
@@ -911,8 +956,12 @@ def routine_maintenance(request):
                 ret, hostfa, hosttr = outFormat(result)
 
                 diffset = sumset.difference(returnset)
+                for eachID in diffset:
+                    hostlist_data = HostList.objects.get(minionid=eachID)
+                    minion_ip = hostlist_data.ip
+                    diff_ip_list.append(minion_ip)
                 hostunre = len(diffset)
-                hostunrestr = ','.join(list(diffset))
+                hostunrestr = ','.join(diff_ip_list)
 
                 hostsft['sum'] = hostsum
                 hostsft['rsum'] = hostrsum
@@ -948,6 +997,7 @@ def routine_maintenance(request):
         context_instance=RequestContext(request)
     )
 
+
 @login_required
 def remote_execution(request):
     """
@@ -963,8 +1013,9 @@ def remote_execution(request):
     data_centers = {}
     get_errors = []
     errors = []
-    danger_cmd = ('rm','reboot','init','shutdown','poweroff')
+    danger_cmd = ('rm', 'reboot', 'init', 'shutdown', 'poweroff')
     minion_ip_list = []
+    diff_ip_list = []
 
     result_dc = DataCenter.objects.all()
     for dc in result_dc:
@@ -973,7 +1024,7 @@ def remote_execution(request):
     dcen_list.sort()
 
     if request.method == 'POST':
-        check_tgt  = request.POST.get('tgt', '')
+        check_tgt = request.POST.get('tgt', '')
         check_dc_list = request.POST.get('datacenter', '')
         module_detection = moduleDetection('cmd.run', user)
         if module_detection:
@@ -987,9 +1038,8 @@ def remote_execution(request):
             arg_strip = arg_string.strip()
             arg_list = arg_strip.split()
             arg_one = arg_list[0]
-            for dcmd in danger_cmd:
-                if arg_one == dcmd:
-                    get_errors.append(u'%s 命令危险，不允许使用！' % arg_one)
+            if arg_one in danger_cmd:
+                get_errors.append(u'%s 命令危险，不允许使用！' % arg_one)
 
         if get_errors:
             for error in get_errors:
@@ -998,7 +1048,6 @@ def remote_execution(request):
             tgt = request.POST.get('tgt')
             dc_list = request.POST.getlist('datacenter')
             arg = request.POST.get('arg')
-            module_lock = moduleLock('cmd.run', user)
 
             if tgt:
                 minion_id_from_tgt_set = targetToMinionID(tgt)
@@ -1016,6 +1065,7 @@ def remote_execution(request):
                     username=settings.SALT_API['user'],
                     password=settings.SALT_API['password'])
                 tgt_list = tgt.split(',')
+                module_lock = moduleLock('cmd.run', user)
                 if ('*' in tgt_list) or ('*' in dc_list):
                     unret = sapi.remote_execution(arg)
                 else:
@@ -1029,8 +1079,12 @@ def remote_execution(request):
                 returnset = set(ret_list)
 
                 diffset = sumset.difference(returnset)
+                for eachID in diffset:
+                    hostlist_data = HostList.objects.get(minionid=eachID)
+                    minion_ip = hostlist_data.ip
+                    diff_ip_list.append(minion_ip)
                 hostunre = len(diffset)
-                hostunrestr = ','.join(list(diffset))
+                hostunrestr = ','.join(diff_ip_list)
 
                 hostsft['sum'] = hostsum
                 hostsft['rsum'] = hostrsum
@@ -1045,7 +1099,7 @@ def remote_execution(request):
                 else:
                     operate_tgt = 'unknown'
 
-                op_time = time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(time.time()))
+                op_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
                 op_user = arg
                 op_tgt = '%s...' % operate_tgt
                 p3 = OperateRecord.objects.create(
@@ -1068,7 +1122,7 @@ def remote_execution(request):
                 ret = tret
 
                 saveRecord = ReturnRecord.objects.create(
-                    #jid=jid[0],
+                    # jid=jid[0],
                     jid='',
                     tgt_total=hostsum,
                     tgt_ret=hostrsum,
@@ -1095,8 +1149,7 @@ def remote_execution(request):
 
 @login_required
 def record(request):
-
-    user = request.user
+    user = request.user.username
     page_size = 10
 
     all_record = OperateRecord.objects.order_by('-id')
@@ -1106,7 +1159,7 @@ def record(request):
     except ValueError:
         page = 1
 
-    #page_id = range(((page-1)*13+1),(page*13+1))
+    # page_id = range(((page-1)*13+1),(page*13+1))
 
     try:
         posts = paginator.page(page)
@@ -1116,15 +1169,15 @@ def record(request):
     return render_to_response(
         'common_record.html',
         {'posts': posts,
-         #'page_id': page_id,
-        },
+         # 'page_id': page_id,
+         },
         context_instance=RequestContext(request)
     )
 
+
 @login_required
 def recordDetail(request):
-
-    user = request.user
+    user = request.user.username
     hostsft = {}
 
     if 'jid' in request.GET:
@@ -1147,9 +1200,10 @@ def recordDetail(request):
             hostsft['fa'] = 'Null'
             hostsft['tr'] = 'Null'
 
-        db = db_operate()
-        sql = 'select id,`return` from salt_returns where jid=%s'
-        jid_result = db.select_table(settings.RETURNS_MYSQL,sql,str(job_id))
+        # db = db_operate()
+        # sql = 'select id,`return` from salt_returns where jid=%s'
+        # jid_result = db.select_table(settings.RETURNS_MYSQL, sql, str(job_id))
+        jid_result = mysqlReturns(job_id)
         ret, hostfa, hosttr = outFormat(jid_result)
 
     else:
@@ -1161,9 +1215,10 @@ def recordDetail(request):
         {'jid_record': jid_record,
          'hostsft': hostsft,
          'ret': ret
-        },
+         },
         context_instance=RequestContext(request)
     )
+
 
 @login_required
 def hostDataCollection(request):
@@ -1173,7 +1228,7 @@ def hostDataCollection(request):
     :return:
     '''
 
-    user = request.user
+    user = request.user.username
     data_centers = {}
     dcen_list = []
 
@@ -1187,9 +1242,10 @@ def hostDataCollection(request):
         'host_data_coll.html',
         {'dcen_list': dcen_list,
          'data_centers': data_centers,
-        },
+         },
         context_instance=RequestContext(request)
     )
+
 
 @login_required
 def dataCollection(request):
@@ -1199,7 +1255,7 @@ def dataCollection(request):
     :return:
     '''
 
-    user = request.user
+    user = request.user.username
     fun = 'grains.item'
     arg_ip = 'ip4_interfaces'
     arg_id = 'id'
@@ -1208,21 +1264,21 @@ def dataCollection(request):
     errors = ''
 
     if request.method == 'GET':
-        if not request.GET.get('datacenter',''):
+        if not request.GET.get('datacenter', ''):
             errors.append('xxx')
 
     if not errors:
         datacenter = request.GET.get('datacenter')
         tgt = '*_*_*_%s_*' % datacenter
         sapi = SaltAPI(
-            url = settings.SALT_API['url'],
-            username = settings.SALT_API['user'],
-            password = settings.SALT_API['password']
+            url=settings.SALT_API['url'],
+            username=settings.SALT_API['user'],
+            password=settings.SALT_API['password']
         )
 
-        minion_ip_return = sapi.masterToMinion(tgt,fun,arg_ip)
-        minion_id_return = sapi.masterToMinion(tgt,fun,arg_id)
-        minion_host_return = sapi.masterToMinion(tgt,fun,arg_host)
+        minion_ip_return = sapi.masterToMinion(tgt, fun, arg_ip)
+        minion_id_return = sapi.masterToMinion(tgt, fun, arg_id)
+        minion_host_return = sapi.masterToMinion(tgt, fun, arg_host)
         minion_ip_dict = minion_ip_return['return'][0]
         minion_id_dict = minion_id_return['return'][0]
         minion_host_dict = minion_host_return['return'][0]
@@ -1262,7 +1318,7 @@ def dataCollection(request):
             minion_info_tuple = tuple(minion_info_list)
             minion_info[mini_key] = minion_info_tuple
 
-        for mininfo_key,mininfo_data in minion_info.iteritems():
+        for mininfo_key, mininfo_data in minion_info.iteritems():
             h = HostList.objects.create(
                 ip=mininfo_data[0],
                 hostname=mininfo_data[1],
@@ -1275,10 +1331,9 @@ def dataCollection(request):
 
     return render_to_response(
         'common_data_collection.html',
-        {'minion_sum' : minion_sum,
+        {'minion_sum': minion_sum,
          'minion_keys_list': minion_keys_list,
          'minion_info_dict': minion_info,
-        },
+         },
         context_instance=RequestContext(request)
     )
-

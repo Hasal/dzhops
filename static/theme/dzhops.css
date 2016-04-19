@@ -1,0 +1,4 @@
+#autoNewLine {
+    word-wrap: break-word;
+    word-break: normal;
+}

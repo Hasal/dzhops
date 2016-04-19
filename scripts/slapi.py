@@ -45,8 +45,8 @@ except Exception,e:
 
 conf = settings.DATABASES['default']
 mikey_sql = '''INSERT INTO `index_minikeys`
-        (`nowtime`,`miniall`,`minion`,`miniout`,`keyall`,`keypre`,`keyrej`) 
-        VALUES 
+        (`nowtime`,`miniall`,`minion`,`miniout`,`keyall`,`keypre`,`keyrej`)
+        VALUES
         (now(), %s, %s, %s, %s, %s, %s)'''
 
 conn = MySQLdb.connect(

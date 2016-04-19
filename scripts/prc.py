@@ -12,8 +12,8 @@ def ExecCmd(cmd):
 # mysql
 host = '192.168.220.201'
 db = 'dzhops'
-user = 'dzhops'
-pw = 'dzhinternet'
+user = '用户'
+pw = '密码'
 port = 3306
 
 saltcmd = 'ps -ef|grep salt-master|grep -v grep'
@@ -30,8 +30,8 @@ snmproc = ExecCmd(snmpcmd)
 
 #save to mysql
 proc_sql = '''INSERT INTO `index_procstatus`
-        (`nowtime`,`saltproc`,`apiproc`,`myproc`,`snmproc`) 
-        VALUES 
+        (`nowtime`,`saltproc`,`apiproc`,`myproc`,`snmproc`)
+        VALUES
         (now(), %s, %s, %s, %s)'''
 conn = MySQLdb.connect(
         host = host,

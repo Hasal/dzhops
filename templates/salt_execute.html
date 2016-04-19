@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}远程操作-移动终端自动化运维平台{% endblock %}
+{% block nav %}
+    <li><a href="{% url 'index' %}"><i class="glyphicon glyphicon-dashboard"></i> 仪表盘</a></li>
+    <li><a href="{% url 'host_list' %}"><i class="glyphicon glyphicon-th-list"></i> 主机列表</a></li>
+    <li class="active"><a href="{% url 'module_deploy' %}"><i class="glyphicon glyphicon-th-large"></i> SaltStack<span class="sr-only">(current)</span></a></li>
+    <li><a href="{% url 'replace_data' %}"><i class="glyphicon glyphicon-repeat"></i> 数据修复</a></li>
+    <li><a href="{% url 'key_list' %}"><i class="glyphicon glyphicon-tags"></i> MinionKeys</a></li>
+    <li><a href="{% url 'record' %}"><i class="glyphicon glyphicon-floppy-disk"></i> 操作记录</a></li>
+{% endblock %}
+{% block content %}
+    <h5 class="page-header">
+        <ol class="breadcrumb">
+            <li><a href="{% url 'module_deploy' %}">模块部署</a></li>
+            <li><a href="{% url 'module_update' %}">配置更新</a></li>
+            <li><a href="{% url 'routine_maintenance' %}">日常维护</a></li>
+            <li class="active">远程操作</li>
+        </ol>
+    </h5>
+    <div class="row">
+        <form class="form-horizontal form-border" method="get" enctype="multipart/form-data" action="{% url 'execute_api' %}">
+            <div class="form-group">
+                <label class="col-md-offset-1 col-md-1 control-label">主机</label>
+                <div class="col-md-9">
+                    <input type="text" class="form-control" name="tgt" value={{ tgt }}>
+                </div>
+            </div>
+            <div class="form-group">
+                  <label class="col-md-offset-1 col-md-1 control-label">机房</label>
+                  <div class="col-md-9">
+                       <label class="checkbox-inline">
+                           <input class="icheck" type="checkbox" value="*" name="datacenter">全部服务器</label>
+                        {% for dcen_li in dcen_list %}
+                            {% for dcen,dccn in data_centers.iteritems %}
+                                {% if dcen == dcen_li %}
+                                    <label class="checkbox-inline">
+                                        <input class="icheck" type="checkbox" value="{{ dcen }}" name="datacenter">{{ dccn }}</label>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                  </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-offset-1 col-md-1 control-label">命令</label>
+                <div class="col-md-9">
+                    <input type="text" class="form-control" name="arg" value={{ arg }}>
+                </div>
+            </div>
+            <div class="form-group">
+                 <div class="col-md-offset-10 col-md-1">
+                    <button type="button" class="btn btn-primary" id="execapi">提交</button>
+                 </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-offset-1 col-md-1 control-label">结果</label>
+                <div class="col-md-9">
+                    <div class='bg-primary'>
+                      <strong id="info"></strong>
+                    </div>
+                    <div>
+                        <p id="result"></p>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <script>
+            $.ajaxSettings.async = false;
+            $(document).ready(function(){
+                $("#execapi").click(function(){
+                    $('#result').html("");
+                    $('#info').html("")
+                    var tgt = $("input[name='tgt']").val();
+                    var arg = $("input[name='arg']").val();
+                    var datacenter = "";
+                    $('input[name="datacenter"]:checked').each(function(){
+                        datacenter += $(this).val() + ',';
+                    });
+                    if ((tgt === '' || tgt === null) && (datacenter === '' || datacenter === null)) {
+                        alert('请输入服务器IP或选择对应机房！');
+                        return false;
+                    };
+                    if (arg === '' || arg === null) {
+                        alert('请输入将要执行的命令！');
+                        return false;
+                    };
+                    $("#execapi").attr("disabled","disabled");
+                    $("#execapi").html("处理中...");
+                    $.getJSON('{% url "execute_api" %}',{'tgt':tgt,'datacenter':datacenter, 'arg': arg}, function(ret){
+                        if (ret.hasOwnProperty('errors')) {
+                            alert(ret.errors);
+                        } else {
+                            if (ret.info.unrecv_conut===0) {
+                                $('#info').html("本次执行对象共"+ret.info.send_count+"台，其中"+ret.info.recv_conut+"台返回结果;");
+                            } else {
+                                $('#info').html("本次执行对象共" + ret.info.send_count + "台，其中" + ret.info.recv_conut + "台返回结果；未返回结果的有以下" + ret.info.unrecv_conut + "台：<br/>" + ret.info.unrecv_strings);
+                            };
+                                var sortArray = [];
+                            $.each(ret.result, function(key, val) { sortArray[sortArray.length] = key;});
+                            sortArray.sort();
+                            $.each(sortArray, function(i, key) {
+                                $("#result").append(
+                                        "<hr/><p class='bg-primary'><b>" + key + "</b></p><pre>"+ret['result'][key]['cont']+"</pre>"
+                                );
+                            });
+                        };
+                        $("#execapi").removeAttr("disabled");
+                        $("#execapi").html("提交");
+                    });
+                });
+            });
+            $.ajaxSettings.async = true;
+        </script>
+    </div>
+   <!--row end-->
+
+{% endblock %}

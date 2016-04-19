@@ -119,8 +119,11 @@ class SaltAPI(object):
         return content
 
     def async_deploy(self,tgt,arg):
-        ''' Asynchronously send a command to connected minions
-            tgt is a list,for example 'zhaogb-201, zhaogb-202, zhaogb-203, ...'
+        '''
+        Master对Minion异步执行sls文件；
+        tgt 为目标minion组成的字符串，格式如 'zhaogb-201, zhaogb-202, zhaogb-203, ...'
+        arg 为要使用的sls文件，如：dzh_sls.mobileserver.install
+        返回值为salt jid，字符串，形如：'20160217132522942860'
         '''
         params = {'client': 'local_async', 'tgt': tgt, 'fun': 'state.sls', 'arg': arg, 'expr_form': 'list'}
         obj = urllib.urlencode(params)
@@ -131,8 +134,9 @@ class SaltAPI(object):
 
     def async_deploy_all(self,arg):
         '''
-        Asynchronously send a command to connected minions
-        tgt is a star,for example '*'
+        Master对所有Minion异步执行sls文件；因为是所有minion，所以无需传入目标主机，方法内直接写为'*';
+        arg 为要使用的sls文件，如：dzh_sls.mobileserver.install
+        返回值为salt jid，字符串，形如：'20160217132522942860'
         '''
         params = {'client': 'local_async', 'tgt': '*', 'fun': 'state.sls', 'arg': arg}
         obj = urllib.urlencode(params)

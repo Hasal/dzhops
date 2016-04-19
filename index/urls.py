@@ -11,5 +11,6 @@ urlpatterns = patterns('index.views',
 
     url(r'^login/$', login, name='login'),
     url(r'^profile/$', 'profile', name='profile'),
+    url(r'^upload/$', 'upload_file', name='upload'),
     url(r'^logout/$', logout, name='logout'),
 )

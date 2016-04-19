@@ -12,8 +12,8 @@ from decimal import Decimal
 # mysql
 host = '192.168.220.201'
 db = 'dzhops'
-user = 'dzhops'
-pw = 'dzhinternet'
+user = '用户'
+pw = '密码'
 port = 3306
 
 # snmp command
@@ -79,8 +79,8 @@ dkused = Decimal(str(round(int(diskusd)/1024/1024,1)))
 
 #save to mysql
 serv_sql = '''INSERT INTO `index_servstatus`
-        (`nowtime`,`sysone`,`sysfive`,`sysfifteen`,`cpuperc`,`memtotal`,`memused`,`memperc`,`disktotal`,`diskused`,`diskperc`) 
-        VALUES 
+        (`nowtime`,`sysone`,`sysfive`,`sysfifteen`,`cpuperc`,`memtotal`,`memused`,`memperc`,`disktotal`,`diskused`,`diskperc`)
+        VALUES
         (now(), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
 conn = MySQLdb.connect(
         host = host,
