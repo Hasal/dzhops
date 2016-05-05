@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}远程操作-移动终端自动化运维平台{% endblock %}
+{% block title %}模块更新-移动终端自动化运维平台{% endblock %}
 {% block nav %}
     <li><a href="{% url 'index' %}"><i class="glyphicon glyphicon-dashboard"></i> 仪表盘</a></li>
     <li><a href="{% url 'asset_list' %}"><i class="glyphicon glyphicon-th-list"></i> 主机列表</a></li>
@@ -12,13 +12,13 @@
     <h5 class="page-header">
         <ol class="breadcrumb">
             <li><a href="{% url 'deploy' %}">模块部署</a></li>
-            <li><a href="{% url 'update' %}">配置更新</a></li>
+            <li class="active">配置更新</li>
             <li><a href="{% url 'routine' %}">日常维护</a></li>
-            <li class="active">远程操作</li>
+            <li><a href="{% url 'execute' %}">远程操作</a></li>
         </ol>
     </h5>
-    <div class="row">
-        <form class="form-horizontal form-border" method="get" enctype="multipart/form-data" action="{% url 'execute_api' %}">
+   <div class="row">
+        <form class="form-horizontal form-border" method="get" enctype="multipart/form-data" action="{% url 'deploy_api' %}">
             <div class="col-sm-10 col-sm-offset-1">
                 <div class="panel panel-default">
                     <div class="panel-body">
@@ -31,23 +31,38 @@
                         <div class="form-group">
                             <label class="col-sm-1 control-label">机房</label>
                             <div class="col-sm-10">
-                                <label class="checkbox-inline">
-                                    <input class="icheck" type="checkbox" value="*" name="datacenter">全部服务器
-                                </label>
+                                <div class="col-sm-2">
+                                    <label class="checkbox-inline">
+                                    <input class="icheck" type="checkbox" value="*" name="datacenter">全部
+                                    </label>
+                                </div>
                                 {% for dcen_li in dcen_list %}
                                     {% for dcen,dccn in data_centers.iteritems %}
                                         {% if dcen == dcen_li %}
-                                            <label class="checkbox-inline">
-                                            <input class="icheck" type="checkbox" value="{{ dcen }}" name="datacenter">{{ dccn }}</label>
+                                            <div class="col-sm-2">
+                                                <label class="checkbox-inline">
+                                                    <input class="icheck" type="checkbox" value="{{ dcen }}" name="datacenter">{{ dccn }}
+                                                </label>
+                                            </div>
                                         {% endif %}
                                     {% endfor %}
                                 {% endfor %}
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-1 control-label">命令</label>
+                            <label class="col-sm-1 control-label">配置</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="arg" value={{ arg }}>
+                                {% for sls in sls_list %}
+                                    {% for sls_key,mod in sls_mod_dict.iteritems %}
+                                        {% if sls == sls_key %}
+                                            <div class="col-sm-2">
+                                                <label class="radio-inline">
+                                                    <input class="icheck" type="radio"  value="{{ sls }}" name="sls">{{ mod }}
+                                                </label>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
@@ -55,11 +70,11 @@
             </div>
             <div class="form-group">
                  <div class="col-sm-offset-9 col-sm-1">
-                    <button type="button" class="btn btn-primary" onclick="saltExecute()" id="execapi">提交</button>
+                     <button type="button" class="btn btn-primary" onclick="saltFunc()" id="salt_submit">提交</button>
                  </div>
             </div>
             <div class="col-sm-10 col-sm-offset-1">
-                <div class='bg-primary'>
+                <div class='bg-success'>
                     <h4 id="info"></h4>
                 </div>
                 <div>
@@ -67,7 +82,5 @@
                 </div>
             </div>
         </form>
-    </div>
-   <!--row end-->
-
+   </div>
 {% endblock %}

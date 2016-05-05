@@ -10,11 +10,11 @@ def ExecCmd(cmd):
     return retno
 
 # mysql
-host = '192.168.220.201'
-db = 'dzhops'
+host = '数据库地址'
+db = '库名'
 user = '用户'
 pw = '密码'
-port = 3306
+port = 端口
 
 saltcmd = 'ps -ef|grep salt-master|grep -v grep'
 apicmd = 'ps -ef|grep salt-api|grep -v grep'

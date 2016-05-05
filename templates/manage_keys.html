@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}认证信息-移动终端自动化运维平台{% endblock %}
+{% block nav %}
+    <li><a href="{% url 'index' %}"><i class="glyphicon glyphicon-dashboard"></i> 仪表盘</a></li>
+    <li><a href="{% url 'asset_list' %}"><i class="glyphicon glyphicon-th-list"></i> 主机列表</a></li>
+    <li><a href="{% url 'deploy' %}"><i class="glyphicon glyphicon-th-large"></i> SaltStack</a></li>
+    <li><a href="{% url 'repair_data' %}"><i class="glyphicon glyphicon-repeat"></i> 数据修复</a></li>
+    <li class="active"><a href="{% url 'keys_show' %}"><i class="glyphicon glyphicon-tags"></i> MinionKeys<span class="sr-only">(current)</span></a></li>
+    <li><a href="{% url 'record_list' %}"><i class="glyphicon glyphicon-floppy-disk"></i> 操作记录</a></li>
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-sm-9">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="col-sm-3">
+                        <select class="form-control" id="select_col">
+                            <option value="acp">已接受</option>
+                            <option value="pre">待接受</option>
+                            <option value="rej">已拒绝</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-3">
+                        <select class="form-control" id="select_dc">
+                            <option value="DC_ALL">机房</option>
+                            {% for en,cn in dc_dict.iteritems %}
+                                <option value="{{ en }}">{{ cn }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-sm-3">
+                        <select class="form-control" id="select_eg">
+                            <option value="EG_ALL">维护人员</option>
+                            {% for user, engi in engi_dict.iteritems %}
+                                <option value="{{ user }}">{{ engi }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-sm-1">
+                        <a class="btn btn-sm btn-info" id="check_accept" onclick="getCheckValue('accept')"> 接受 </a>
+                    </div>
+                    <div class="col-sm-1">
+                        <a class="btn btn-sm btn-warning" id="check_reject" onclick="getCheckValue('reject')"> 拒绝 </a>
+                    </div>
+                    <div class="col-sm-1">
+                        <a class="btn btn-sm btn-danger" id="check_delete" onclick="getCheckValue('delete')"> 删除 </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-9" id="tb_minion">
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr class="success">
+                        <th class="text-center">
+                            <label class="checkbox-inline">
+                                <input id="checkall" type="checkbox" value="checkall" onclick="checkAll(checkall)">全选
+                            </label>
+                        </th>
+                        <th class="text-center">Minion ID</th>
+                        <th class="text-center">Minion IP</th>
+                    </tr>
+                </thead>
+                    <tbody id="trtd">
+                        {% if serv_list %}
+                            {% for serv in serv_list %}
+                                {% for ip,id in serv.iteritems %}
+                                    <tr id="{{ id }}">
+                                        <td class="text-center">
+                                            <label>
+                                                <input name="minion_id" type="checkbox" value="{{ id }}">
+                                            </label>
+                                        </td>
+                                        <td class="text-center">{{ id }}</td>
+                                        <td class="text-center">{{ ip }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function() {
+            $(".form-control").change(function() {
+                var col = $("#select_col").val();
+                var dcen = $("#select_dc").val();
+                var engi = $("#select_eg").val();
+                var checkall_status = document.getElementById("checkall").checked;
+                if (checkall_status === true) {
+                    $("#checkall").attr("checked", false);
+                }
+                $("#trtd").html('<tr><td></td><td class="text-center"><img src="/static/img/dataloading.gif"/></td><td></td></tr>');
+                $.getJSON("{% url 'keys_api' %}", {"col": col, "dcen": dcen, "engi": engi}, function(result) {
+                    $("#trtd").html("");
+                    $.each(result, function(index, value) {
+                        $.each(value, function(ip, id) {
+                            $("#trtd").append('\
+                                <tr id="'+id+'">\
+                                    <td class="text-center">\
+                                        <label>\
+                                            <input name="minion_id" type="checkbox" value="'+id+'">\
+                                        </label>\
+                                    </td>\
+                                    <td class="text-center">'+id+'</td>\
+                                    <td class="text-center">'+ip+'</td>\
+                                </tr>\
+                            ');
+                        });
+                    });
+                });
+            });
+        });
+    </script>
+{% endblock %}

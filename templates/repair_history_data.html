@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}模块部署-移动终端自动化运维平台{% endblock %}
+{% block nav %}
+    <li><a href="{% url 'index' %}"><i class="glyphicon glyphicon-dashboard"></i> 仪表盘</a></li>
+    <li><a href="{% url 'asset_list' %}"><i class="glyphicon glyphicon-th-list"></i> 主机列表</a></li>
+    <li><a href="{% url 'deploy' %}"><i class="glyphicon glyphicon-th-large"></i> SaltStack</a></li>
+    <li class="active"><a href="{% url 'repair_data' %}"><i class="glyphicon glyphicon-repeat"></i> 数据修复<span class="sr-only">(current)</span></a></li>
+    <li><a href="{% url 'keys_show' %}"><i class="glyphicon glyphicon-tags"></i> MinionKeys</a></li>
+    <li><a href="{% url 'record_list' %}"><i class="glyphicon glyphicon-floppy-disk"></i> 操作记录</a></li>
+{% endblock %}
+{% block content %}
+    <h5 class="page-header">
+        <ol class="breadcrumb">
+            <li class="active">历史数据</li>
+            <!--
+            <li><a href="#">全部数据</a></li>
+            -->
+        </ol>
+    </h5>
+    <div class="row">
+        <form class="form-horizontal form-border" method="get" enctype="multipart/form-data" action="{% url 'repair_data' %}">
+            <div class="col-sm-10 col-sm-offset-1">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">机房</label>
+                            <div class="col-sm-9">
+                                <div class="col-sm-2">
+                                    <label class="checkbox-inline">
+                                        <input class="icheck" type="checkbox" value="*" name="datacenter">全部
+                                    </label>
+                                </div>
+                                {% for dcen_li in dc_list %}
+                                    {% for dcen,dccn in data_centers.iteritems %}
+                                        {% if dcen == dcen_li %}
+                                            <div class="col-sm-2">
+                                                <label class="checkbox-inline">
+                                                    <input class="icheck" type="checkbox" value="{{ dcen }}" name="datacenter">{{ dccn }}
+                                                </label>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">市场</label>
+                                <div class="col-sm-9">
+                                    {% for st_exc in stock_exchanges %}
+                                        <div class="col-sm-1">
+                                            <label class="checkbox-inline">
+                                                <input class="icheck" type="checkbox" value="{{ st_exc }}" name="stockexchange">{{ st_exc }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-1 control-label">程序</label>
+                            <div class="col-sm-9">
+                                <div class="col-sm-2">
+                                    <label class="radio-inline">
+                                        <input class="icheck" type="radio"  value="dzh_sls.mobileserver.data_history_remob" name="sls">重启
+                                    </label>
+                                </div>
+                                <div class="col-sm-2">
+                                    <label class="radio-inline">
+                                        <input class="icheck" type="radio" value="dzh_sls.mobileserver.data_history_noremob" name="sls">不重启
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                 <div class="col-sm-offset-9 col-sm-1">
+                     <button type="button" class="btn btn-primary" onclick="repairHistoryData()" id="submit_history">提交</button>
+                 </div>
+            </div>
+            <div class="col-sm-10 col-sm-offset-1">
+                <div class='bg-success'>
+                    <h4 id="info"></h4>
+                </div>
+                <div>
+                    <p id="result"></p>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

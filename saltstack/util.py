@@ -1,13 +1,79 @@
 # -*- coding: utf-8 -*-
 
 from hostlist.models import HostList, DataCenter
-from common.models import SaltReturns
+from saltstack.models import SaltReturns
+from saltstack.models import ModulesLock
 from saltstack.saltapi import SaltAPI
 from dzhops import settings
 
 import logging, time, json, re
 
 log = logging.getLogger('dzhops')
+
+def moduleDetection(module, user):
+    '''
+    检测如state.sls/cmd.run等模块是否被占用；
+    :param module: 'cmd.run' 或 'state.sls'
+    :param user: 'zhaogb' 或其他用户名；
+    :return: 如果模块被占用，则返回如 "zhaogb is using cmd.run"；如果模块没有被占用，则返回空字符串；
+    '''
+    log.debug('%s detection module %s occupied' % (user, module))
+    try:
+        module_exist = ModulesLock.objects.get(module=module)
+        module_status = module_exist.status
+        module_user = module_exist.user
+        if module_status == 'True':
+            status = '%s is using module %s' % (module_user, module)
+            log.info(status)
+        elif module_status == 'False':
+            status = ''
+            log.info("Nobody uses module %s" % module)
+        else:
+            pass
+    except ModulesLock.DoesNotExist:
+        status = ''
+        log.info("The %s module has never been used" % module)
+
+    return status
+
+
+def moduleLock(module, user):
+    '''
+    将模块锁定；
+    :param module: 'cmd.run' 或 'state.sls'
+    :param user: 'zhaogb' 或其他用户名；
+    :return: None
+    '''
+    log.debug('%s Lock Module : %s' % (user, module))
+    try:
+        module_exist = ModulesLock.objects.get(module=module)
+        module_status = module_exist.status
+        if module_status == 'False':
+            module_exist.status = 'True'
+            module_exist.user = user
+            module_exist.save()
+            log.info("%s Lock Module %s Successed!" % (user, module))
+        else:
+            log.info("Someone could use this module %s" % module)
+    except ModulesLock.DoesNotExist:
+        log.info("The %s module has never been used" % module)
+        module_lock = ModulesLock.objects.create(module=module, status='True', user=user)
+        log.info("%s Lock Module %s Successed!" % (user, module))
+
+
+def moduleUnlock(module, user):
+    '''
+    将锁定的模块解锁；
+    :param module: 'cmd.run' 或 'state.sls'
+    :param user: 'zhaogb' 或其他用户名；
+    :return: None
+    '''
+    log.debug('%s Unlock Module %s' % (user, module))
+    module_unlock = ModulesLock.objects.get(module=module)
+    module_unlock.status = 'False'
+    module_unlock.user = ''
+    module_unlock.save()
+    log.info('%s unlock module %s successed!' % (user, module))
 
 def targetToMinionID(tgt):
     '''
@@ -319,14 +385,18 @@ def manageResult(send_ids_set, recv_ips_list):
     :return: {digit, digit, digit, strings}
     '''
     diff_ip_list = []
-    info_keys = ('send_count', 'recv_conut', 'unrecv_conut', 'unrecv_strings')
+    info_keys = ('send_count', 'recv_count', 'unrecv_count', 'unrecv_strings')
     send_ids_count = len(send_ids_set)
     recv_ips_count = len(recv_ips_list)
     if send_ids_count == recv_ips_count:
         info_values = [send_ids_count, recv_ips_count, 0, '']
         send_recv_info = dict(zip(info_keys, info_values))
     elif recv_ips_count == 0:
-        unrecv_strings = ', '.join(list(send_ids_set))
+        unrecv_ip_list = []
+        for i in send_ids_set:
+            data = HostList.objects.get(minionid=i)
+            unrecv_ip_list.append(data.ip)
+        unrecv_strings = ', '.join(unrecv_ip_list)
         info_values = [send_ids_count, 0, send_ids_count, unrecv_strings]
         send_recv_info = dict(zip(info_keys, info_values))
     else:
@@ -337,11 +407,11 @@ def manageResult(send_ids_set, recv_ips_list):
             recv_ids_list.append(minion_id)
         recv_ids_set = set(recv_ids_list)
         diff_set = send_ids_set.difference(recv_ids_set)
-        unrecv_conut = len(diff_set)
+        unrecv_count = len(diff_set)
         for i in diff_set:
             data = HostList.objects.get(minionid=i)
             diff_ip_list.append(data.ip)
-        unrecv_strings = ','.join(diff_ip_list)
-        info_values = [send_ids_count, recv_ips_count, unrecv_conut, unrecv_strings]
+        unrecv_strings = ', '.join(diff_ip_list)
+        info_values = [send_ids_count, recv_ips_count, unrecv_count, unrecv_strings]
         send_recv_info = dict(zip(info_keys, info_values))
     return send_recv_info

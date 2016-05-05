@@ -1,19 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from django.shortcuts import render_to_response, render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
+from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
-from django.contrib import auth
-from django.contrib import messages
-from django.template.context import RequestContext
-from django.forms.formsets import formset_factory
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate
 from dzhops import settings
 from index.models import MiniKeys, ProcStatus, ServStatus
 from index.forms import ChangePasswordForms, UploadFileForm
-from common.models import OperateRecord
+from record.models import OperateRecord
 # import system libs
 import Image
 import os
@@ -78,10 +73,10 @@ def upload_file(request):
             return HttpResponseRedirect('/accounts/upload/')
     else:
         form = UploadFileForm()
-    return render_to_response(
+    return render(
+        request,
         'index_upload.html',
-        {'form': form},
-        context_instance=RequestContext(request)
+        {'form': form}
     )
 
 
@@ -113,13 +108,13 @@ def profile(request):
         form = ChangePasswordForms()
 
     tips = tips.encode('utf-8')
-    return render_to_response(
+    return render(
+        request,
         'profile.html',
         {
             'form': form,
             'tips': tips
-        },
-        context_instance=RequestContext(request),
+        }
     )
 
 
@@ -232,41 +227,17 @@ def index(request):
 
     streslut = ''
     try:
-        operate_rec = OperateRecord.objects.order_by('-id')[0:5]
+        operate_rec = OperateRecord.objects.order_by('-id')[0:8]
         for result in operate_rec:
             streslut += '%s %s %s %s\n' % (result.nowtime, result.username, result.user_operate, result.simple_tgt)
-            # operate_rec_0 = OperateRecord.objects.order_by('-id')[0]
-            # operate_rec_1 = OperateRecord.objects.order_by('-id')[1]
-            # operate_rec_2 = OperateRecord.objects.order_by('-id')[2]
-
-            # ret['op_time_0'] = operate_rec_0.nowtime
-            # ret['op_time_1'] = operate_rec_1.nowtime
-            # ret['op_time_2'] = operate_rec_2.nowtime
-            # ret['op_user_0'] = operate_rec_0.username
-            # ret['op_user_1'] = operate_rec_1.username
-            # ret['op_user_2'] = operate_rec_2.username
-            # ret['op_user_op_0'] = operate_rec_0.result
-            # ret['op_user_op_1'] = operate_rec_1.user_operate
-            # ret['op_user_op_2'] = operate_rec_2.user_operate
-            # ret['op_tgt_0'] = operate_rec_0.simple_tgt
-            # ret['op_tgt_1'] = operate_rec_1.simple_tgt
-            # ret['op_tgt_2'] = operate_rec_2.simple_tgt
-
-    # except OperationalError,e:
     except Exception, e:
-        # ret['op_error_code'] = e[0]
-        # ret['op_error_content'] = e[1]
-        ret['op_time_0'] = 'Null'
-        ret['op_time_1'] = 'Null'
-        ret['op_time_2'] = 'Null'
-        ret['op_user_0'] = 'Null'
-        ret['op_user_1'] = 'Null'
-        ret['op_user_2'] = 'Null'
-        ret['op_user_op_0'] = 'Null'
-        ret['op_user_op_1'] = 'Null'
-        ret['op_user_op_2'] = 'Null'
-        ret['op_tgt_0'] = 'Null'
-        ret['op_tgt_1'] = 'Null'
-        ret['op_tgt_2'] = 'Null'
+        log.error("No data acquired.")
 
-    return render_to_response('index.html', {'ret': ret, 'stret': streslut}, context_instance=RequestContext(request))
+    return render(
+        request,
+        'index.html',
+        {
+            'ret': ret,
+            'stret': streslut
+        }
+    )

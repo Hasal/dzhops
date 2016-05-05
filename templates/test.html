@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="DzhOPS">
+    <meta name="author" content="Guibin">
+    <link rel="icon" href="/static/img/favicon.ico">
+
+    <title>{% block title %}{% endblock %}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/static/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="/static/bootstrap/3.3.4/css/bootstrap-theme.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/static/theme/dashboard.css" rel="stylesheet">
+
+    <!--JavaScript-->
+    <script src="/static/otherjs/jquery.min.js"></script>
+    <script src="/static/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="/static/otherjs/docs.min.js"></script>
+    <script src="/static/otherjs/dzhops.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/static/otherjs/ie10-viewport-bug-workaround.js"></script>
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <script type="text/javascript" async="" src="/static/otherjs/ga.js"></script><script type="text/javascript" charset="UTF-8" src="/static/otherjs/cloud.js"></script><script src="/static/otherjs/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="/static/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="/static/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <div id="wrapper">
+        <nav class="navbar-default navbar-static-side" role="navigation">
+            <div class="sidebar-collapse">
+                <ul class="nav" id="side-menu">
+{#                    {% include 'anew/nav_li_profile.html' %}#}
+                    <li id="index">
+                       <a href="#"><i class="glyphicon glyphicon-dashboard"></i> <span class="nav-label">仪表盘</span><span class="label label-info pull-right"></span></a>
+                    </li>
+                    <li id="juser">
+                        <a><i class="glyphicon glyphicon-th-list"></i><span class="nav-label">主机列表</span><span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            <li class="group"><a href="#">机房</a></li>
+                            <li class="user"><a href="#">维护人员</a></li>
+                        </ul>
+                    </li>
+                    <li id="jasset">
+                        <a><i class="glyphicon glyphicon-th-large"></i> <span class="nav-label">SaltStack</span><span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            <li class="group"><a href="#">模块部署</a></li>
+                            <li class="asset"> <a href="#">配置更新</a></li>
+                            <li class="idc"> <a href="#">数据修复</a></li>
+                            <li class="idc"> <a href="#">日常维护</a></li>
+                            <li class="idc"> <a href="#">远程操作</a></li>
+                        </ul>
+                    </li>
+                    <li id="jperm">
+                        <a><i class="glyphicon glyphicon-tags"></i> <span class="nav-label">Minions管理</span><span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            <li class="sudo"><a class="sudo" href="#">已接受</a></li>
+                            <li class="sudo"><a class="sudo" href="#">待接收</a></li>
+                            <li class="sudo"><a class="sudo" href="#">已拒绝</a></li>
+                        </ul>
+                    </li>
+                    <li id="setting">
+                           <a href="#"><i class="glyphicon glyphicon-floppy-disk"></i> <span class="nav-label">操作记录</span><span class="label label-info pull-right"></span></a>
+                    </li>
+                </ul>
+
+            </div>
+        </nav>
+        <div id="page-wrapper" class="gray-bg">
+            <div class="row border-bottom">
+{#                {% include 'anew/nav_bar_header.html' %}#}
+            </div>
+            {% block content %}{% endblock %}
+{#            {% include 'anew/footer.html' %}#}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}主机列表-移动终端自动化运维平台{% endblock %}
+{% block nav %}
+    <li><a href="{% url 'index' %}"><i class="glyphicon glyphicon-dashboard"></i> 仪表盘</a></li>
+    <li><a href="{% url 'asset_list' %}"><i class="glyphicon glyphicon-th-list"></i> 主机列表</a></li>
+    <li><a href="{% url 'deploy' %}"><i class="glyphicon glyphicon-th-large"></i> SaltStack</a></li>
+    <li><a href="{% url 'repair_data' %}"><i class="glyphicon glyphicon-repeat"></i> 数据修复</a></li>
+    <li><a href="{% url 'keys_show' %}"><i class="glyphicon glyphicon-tags"></i> MinionKeys</a></li>
+    <li class="active"><a href="{% url 'record_list' %}"><i class="glyphicon glyphicon-floppy-disk"></i> 操作记录<span class="sr-only">(current)</span></a></li>
+{% endblock %}
+{% block content %}
+    <h5 class="page-header">
+        <ol class="breadcrumb">
+            <li><a href="{% url 'record_list' %}">操作记录</a></li>
+            <li class="active">详细记录</li>
+        </ol>
+    </h5>
+    <div class="row">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr class="active">
+                    <th>时间</th>
+                    <th>用户</th>
+                    <th>操作</th>
+                    <th>目标</th>
+                    <th>jid</th>
+                </tr>
+            </thead>
+            {% if jid_record %}
+                <tbody>
+                    <tr>
+                        <td>{{ jid_record.nowtime|date:"Y-m-d H:i:s" }}</td>
+                        <td>{{ jid_record.username }}</td>
+                        <td>{{ jid_record.user_operate }}</td>
+                        <td>{{ jid_record.simple_tgt }}</td>
+                        <td>{{ jid_record.jid }}</td>
+                    </tr>
+                </tbody>
+            {% endif %}
+        </table>
+        <div class="col-sm-offset-1 col-sm-9">
+            {% if hostsft %}
+                <div class="alert alert-default" role="alert">
+                    <h4>
+                        {% if hostsft.tr %}
+                            本次执行对象共{{ hostsft.sum }}台，其中{{ hostsft.rsum }}台返回结果：成功{{hostsft.tr}}台，失败{{hostsft.fa}}台；
+                        {% else %}
+                            本次执行对象共{{ hostsft.sum }}台，其中{{ hostsft.rsum }}台返回结果;
+                        {% endif %}
+                        {% if hostsft.unrestr %}
+                            未返回结果的有以下{{hostsft.unre}}台：{{ hostsft.unrestr }}
+                        {% endif %}
+                    </h4>
+                </div>
+            {% endif %}
+        </div>
+        <div class="col-sm-offset-1 col-sm-9">
+            {% for each_ret,each_val in ret.items %}
+                <!-- Button trigger modal -->
+                <div class="col-sm-3" style="margin-bottom: 5px">
+                    {% if not hostsft.tr or each_val.status == 'True' %}
+                        <button type="button" class="btn btn-info btn-block" data-toggle="modal" data-target="#{{ each_ret|cut:'.' }}">{{ each_ret }}</button>
+                    {% else %}
+                        <button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#{{ each_ret|cut:'.' }}">{{ each_ret }}</button>
+                    {% endif %}
+                </div>
+                <!-- Modal -->
+                <div class="modal fade bs-example-modal-lg" id="{{ each_ret|cut:'.' }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">{{ each_ret }}</h4>
+                      </div>
+                      <div class="modal-body">
+                          <pre>{{ each_val.cont }}</pre>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

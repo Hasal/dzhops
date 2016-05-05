@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}主机列表-移动终端自动化运维平台{% endblock %}
+{% block nav %}
+    <li><a href="{% url 'index' %}"><i class="glyphicon glyphicon-dashboard"></i> 仪表盘</a></li>
+    <li class="active"><a href="{% url 'asset_list' %}"><i class="glyphicon glyphicon-th-list"></i> 主机列表<span class="sr-only">(current)</span></a></li>
+    <li><a href="{% url 'deploy' %}"><i class="glyphicon glyphicon-th-large"></i> SaltStack</a></li>
+    <li><a href="{% url 'repair_data' %}"><i class="glyphicon glyphicon-repeat"></i> 数据修复</a></li>
+    <li><a href="{% url 'keys_show' %}"><i class="glyphicon glyphicon-tags"></i> MinionKeys</a></li>
+    <li><a href="{% url 'record_list' %}"><i class="glyphicon glyphicon-floppy-disk"></i> 操作记录</a></li>
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="col-sm-3">
+                    <select class="form-control" id="select_dc">
+                        <option value="All_DC">机房</option>
+                        {% for en,cn in dc_dict.iteritems %}
+                            <option value="{{ en }}">{{ cn }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <select class="form-control" id="select_eg">
+                        <option value="ALL_ENGI">维护人员</option>
+                        {% for user, engi in engi_dict.iteritems %}
+                            <option value="{{ user }}">{{ engi }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        {% if serv_list %}
+            <table class="table table-bordered table-striped table-hover">
+                <thead>
+                    <tr class="success">
+                        <th>ID</th>
+                        <th>IP地址</th>
+                        <th>主机名</th>
+                        <th>MinionID</th>
+                        <th>运营商</th>
+                        <th>类别</th>
+                        <th>地区</th>
+                        <th>机房</th>
+                        <th>维护人员</th>
+{#                        <th>MAC地址</th>#}
+{#                        <th>主行情源</th>#}
+{#                        <th>备行情源</th>#}
+{#                        <th>授权日期</th>#}
+{#                        <th>授权状态</th>#}
+{#                        <th>备注</th>#}
+                    </tr>
+                </thead>
+                <tbody id="trtd">
+                    {% for serv in serv_list %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            {% for i in serv %}
+                                <td>{{ i }}</td>
+                            {% endfor %}
+{#                            <td>{{ all_host.hostname }}</td>#}
+{#                            <td>{{ all_host.minionid }}</td>#}
+{#                            <td>{{ all_host.nocn }}</td>#}
+{#                            <td>{{ all_host.catagorycn }}</td>#}
+{#                            <td>{{ all_host.pacn }}</td>#}
+{#                            <td>{{ all_host.dccn }}</td>#}
+{#                            <td>{{ all_host.engineer }}</td>#}
+{#                            <td>{{ all_host.macaddr }}</td>#}
+{#                            <td>{{ all_host.zsourceip }}</td>#}
+{#                            <td>{{ all_host.bsourceip }}</td>#}
+{#                            <td>{{ all_host.licdate }}</td>#}
+{#                            <td>{{ all_host.licstatus }}</td>#}
+{#                            <td>{{ all_host.remark }}</td>#}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+    <script>
+        $(document).ready(function() {
+            $(".form-control").change(function() {
+                var dcen = $("#select_dc").val();
+                var engi = $("#select_eg").val();
+                $("#trtd").html('<tr><td></td><td class="text-center"><img src="/static/img/dataloading.gif"/></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>');
+                $.getJSON("{% url 'asset_api' %}", {"dcen": dcen, "engi": engi}, function(result){
+                    $("#trtd").html("");
+                    $.each(result, function(index,value){
+                        var id = index + 1;
+                        var str_head = '<tr><td>'+id+'</td>';
+                        var str_con = "";
+                        $.each(value, function(i,v) {
+                            str_con += '<td>'+v+'</td>';
+                        });
+                        $("#trtd").append(str_head + str_con + '</tr>');
+                    });
+                });
+
+            });
+        });
+    </script>
+{% endblock %}

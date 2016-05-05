@@ -2,11 +2,11 @@
 {% block title %}主机列表-移动终端自动化运维平台{% endblock %}
 {% block nav %}
     <li><a href="{% url 'index' %}"><i class="glyphicon glyphicon-dashboard"></i> 仪表盘</a></li>
-    <li><a href="{% url 'host_list' %}"><i class="glyphicon glyphicon-th-list"></i> 主机列表</a></li>
-    <li><a href="{% url 'module_deploy' %}"><i class="glyphicon glyphicon-th-large"></i> SaltStack</a></li>
-    <li><a href="{% url 'replace_data' %}"><i class="glyphicon glyphicon-repeat"></i> 数据修复</a></li>
-    <li><a href="{% url 'key_list' %}"><i class="glyphicon glyphicon-tags"></i> MinionKeys</a></li>
-    <li class="active"><a href="{% url 'record' %}"><i class="glyphicon glyphicon-floppy-disk"></i> 操作记录<span class="sr-only">(current)</span></a></li>
+    <li><a href="{% url 'asset_list' %}"><i class="glyphicon glyphicon-th-list"></i> 主机列表</a></li>
+    <li><a href="{% url 'deploy' %}"><i class="glyphicon glyphicon-th-large"></i> SaltStack</a></li>
+    <li><a href="{% url 'repair_data' %}"><i class="glyphicon glyphicon-repeat"></i> 数据修复</a></li>
+    <li><a href="{% url 'keys_show' %}"><i class="glyphicon glyphicon-tags"></i> MinionKeys</a></li>
+    <li class="active"><a href="{% url 'record_list' %}"><i class="glyphicon glyphicon-floppy-disk"></i> 操作记录<span class="sr-only">(current)</span></a></li>
 {% endblock %}
 {% block content %}
     <h5 class="page-header">
@@ -16,9 +16,9 @@
         </ol>
     </h5>
     <div class="row">
-        <table class="table table-bordered">
+        <table class="table table-bordered table-striped table-hover">
             <thead>
-                <tr>
+                <tr class="success">
                     <th>序号</th>
                     <th>时间</th>
                     <th>用户</th>
@@ -36,7 +36,7 @@
                             <td>{{ row_record.username }}</td>
                             <td>{{ row_record.user_operate }}</td>
                             <td>{{ row_record.simple_tgt }}</td>
-                            <td><a href="/common/record/detail/?jid={{ row_record.jid }}">{{ row_record.jid }}</a></td>
+                            <td><a href="/record/detail/?jid={{ row_record.jid }}">{{ row_record.jid }}</a></td>
                         </tr>
                     {% endfor %}
                 </tbody>

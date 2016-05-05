@@ -2,11 +2,11 @@
 {% block title %}移动终端自动化运维平台{% endblock %}
 {% block nav %}
     <li class="active"><a href="{% url 'index' %}"><i class="glyphicon glyphicon-dashboard"></i> 仪表盘<span class="sr-only">(current)</span></a></li>
-    <li><a href="{% url 'host_list' %}"><i class="glyphicon glyphicon-th-list"></i> 主机列表</a></li>
-    <li><a href="{% url 'module_deploy' %}"><i class="glyphicon glyphicon-th-large"></i> SaltStack</a></li>
-    <li><a href="{% url 'replace_data' %}"><i class="glyphicon glyphicon-repeat"></i> 数据修复</a></li>
-    <li><a href="{% url 'key_list' %}"><i class="glyphicon glyphicon-tags"></i> MinionKeys</a></li>
-    <li><a href="{% url 'record' %}"><i class="glyphicon glyphicon-floppy-disk"></i> 操作记录</a></li>
+    <li><a href="{% url 'asset_list' %}"><i class="glyphicon glyphicon-th-list"></i> 主机列表</a></li>
+    <li><a href="{% url 'deploy' %}"><i class="glyphicon glyphicon-th-large"></i> SaltStack</a></li>
+    <li><a href="{% url 'repair_data' %}"><i class="glyphicon glyphicon-repeat"></i> 数据修复</a></li>
+    <li><a href="{% url 'keys_show' %}"><i class="glyphicon glyphicon-tags"></i> MinionKeys</a></li>
+    <li><a href="{% url 'record_list' %}"><i class="glyphicon glyphicon-floppy-disk"></i> 操作记录</a></li>
 {% endblock %}
 {% block content %}
     <h5 class="page-header">
@@ -14,7 +14,7 @@
             <li class="active">仪表盘</li>
         </ol>
     </h5>
-    <div class="col-xs-8 col-sm-4 placeholder">
+    <div class="col-sm-4 placeholder">
       <ul class="list-group">
         <li class="list-group-item  active">服务器信息({{ret.nowtime|date:"Y-m-d H:i:s"}})</li>
         <li class="list-group-item">系统负载 : <strong>{{ret.sysone}}, {{ret.sysfive}}, {{ret.sysfifteen}}</strong></li>
@@ -23,7 +23,7 @@
         <li class="list-group-item">硬盘 : <strong>{{ret.diskused}}G/{{ret.disktotal}}G {{ret.diskperc}}%</strong></li>
       </ul>
     </div>
-    <div class="col-xs-8 col-sm-4 placeholder">
+    <div class="col-sm-4 placeholder">
       <ul class="list-group">
         <li class="list-group-item active">组件状态({{ret.proctime|date:"Y-m-d H:i:s"}})</li>
         <li class="list-group-item">SaltStack进程 : <strong>{{ret.saltst}}</strong></li>
@@ -32,7 +32,7 @@
         <li class="list-group-item">SNMP进程 : <strong>{{ret.snmpst}}</strong></li>
       </ul>
     </div>
-    <div class="col-xs-4 col-sm-2 placeholder">
+    <div class="col-sm-2 placeholder">
       <ul class="list-group">
         <li class="list-group-item active">Minions状态</li>
         <li class="list-group-item">总量 : <strong>{{ret.num_miniall}}</strong> 台</li>
@@ -41,37 +41,21 @@
         <!--li class="list-group-item">备用</li-->
       </ul>
     </div>
-    <div class="col-xs-4 col-sm-2 placeholder">
+    <div class="col-sm-2 placeholder">
       <ul class="list-group">
-        <a href="{% url 'key_list' %}" class="list-group-item active">Key列表</a>
-        <a href="{% url 'key_list' %}" class="list-group-item">已接受 : <strong>{{ret.num_mini}}</strong> 台</a>
-        <a href="{% url 'key_unaccept' %}" class="list-group-item">待接受 : <strong>{{ret.num_minipre}}</strong> 台</a>
-        <a href="{% url 'key_reject' %}" class="list-group-item">已拒绝 : <strong>{{ret.num_minirej}}</strong> 台</a>
+        <a href="{% url 'keys_show' %}" class="list-group-item active">Key列表</a>
+        <a href="{% url 'keys_show' %}" class="list-group-item">已接受 : <strong>{{ret.num_mini}}</strong> 台</a>
+        <a href="{% url 'keys_show' %}" class="list-group-item">待接受 : <strong>{{ret.num_minipre}}</strong> 台</a>
+        <a href="{% url 'keys_show' %}" class="list-group-item">已拒绝 : <strong>{{ret.num_minirej}}</strong> 台</a>
         <!--li class="list-group-item">备用</li-->
       </ul>
     </div>
-    <div class="col-xs-12 col-sm-6">
+    <div class="col-sm-8 placeholder">
       <div class="panel panel-primary">
         <div class="panel-heading">
-          <h3 class="panel-title">网卡流量</h3>
+          <h3 class="panel-title">操作记录</h3>
         </div>
         <div class="panel-body">
-            <img class="img-rounded" src="/static/img/8.png" width="465" height="182"alt="网卡流量图"/>
-        </div>
-      </div>
-    </div>
-    <div class="col-xs-12 col-sm-6 placeholder">
-      <div class="panel panel-primary">
-        <div class="panel-heading">
-          <h3 class="panel-title">系统消息</h3>
-        </div>
-        <div class="panel-body">
-          欢迎回来，<a href="/accounts/profile"><strong><u>{{ user.username }}</u></strong></a><br />
-          <!--
-          登录时间 : <strong>{{ user.last_login|date:"Y-m-d H:i:s" }}</strong><br />
-          -->
-          <br />
-          <strong><a href="{% url 'record' %}">操作记录：</a></strong><br />
           <pre>{{ stret }}</pre>
         </div>
       </div>

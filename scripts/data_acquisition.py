@@ -10,11 +10,11 @@ import math
 from decimal import Decimal
 
 # mysql
-host = '192.168.220.201'
-db = 'dzhops'
+host = '数据库地址'
+db = '库名'
 user = '用户'
 pw = '密码'
-port = 3306
+port = 端口
 
 # snmp command
 sysone = "snmpget -v 2c -c public localhost .1.3.6.1.4.1.2021.10.1.3.1 |cut -d ':' -f 4|tr -d '[:blank:]'"
