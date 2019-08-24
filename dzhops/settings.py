@@ -72,8 +72,8 @@ DATABASES = {
         'NAME': 'dzhops',
         'USER': 'dzhops',
         'PORT': 33066,
-        'HOST': '10.15.201.102',
-        'PASSWORD': 'dzhinternet',
+        'HOST': 'db-dev.dzh-inc.com',
+        'PASSWORD': 'dzhops',
     }
 }
 
@@ -112,7 +112,7 @@ TEMPLATE_DIRS = (
 #         'USER': 'salt',
 #         'PORT': 3306,
 #         'HOST': '192.168.220.201',
-#         'PASSWORD': 'dzhinternet'
+#         'PASSWORD': 'salt'
 #     }
 # }
 
@@ -120,11 +120,50 @@ TEMPLATE_DIRS = (
 SALT_API = {
     'url': 'http://10.15.201.102:18000/',
     'user': 'zhaogb',
-    'password': 'dzhinternet'
+    'password': 'zhaogb'
 }
 
 # log setting
-try:
-    import config_log
-except:
-    pass
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s %(levelname)s %(module)s %(funcName)s %(lineno)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        },
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'log_handler': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'log', 'dzhops.log'),
+            'formatter': 'standard',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'dzhops': {
+            'handlers': ['log_handler'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+    }
+}
+
