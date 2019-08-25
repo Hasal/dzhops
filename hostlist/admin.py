@@ -1,11 +1,11 @@
 from django.contrib import admin
-from hostlist.models import HostList, Dzhuser, DataCenter, NetworkOperator, ProvinceArea, Catagory
+from hostlist.models import HostList, DzhUser, DataCenter, NetworkOperator, ProvinceArea, Category
 
 # Register your models here.
 
 admin.site.register(HostList)
-admin.site.register(Dzhuser)
+admin.site.register(DzhUser)
 admin.site.register(DataCenter)
 admin.site.register(NetworkOperator)
 admin.site.register(ProvinceArea)
-admin.site.register(Catagory)
+admin.site.register(Category)

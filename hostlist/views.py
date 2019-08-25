@@ -1,43 +1,34 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_GET
+from hostlist.models import DzhUser, DataCenter, HostList
 
-from hostlist.models import Dzhuser, DataCenter, HostList
-
-import json, logging
-
+import logging
 
 log = logging.getLogger('dzhops')
 
+
 @login_required
-def assetList(request):
-    '''
+def asset_list(request):
+    """
     展示所有服务器信息；
-    :param request:
-    :return:
-    '''
-    user = request.user.username
+    :param request: 
+    :return: 
+    """
+    # user = request.user.username
     dc_dict = {}
     engi_dict = {}
-    serv_dict = {}
-    serv_list = []
-    ip_list = []
 
     dc = DataCenter.objects.all()
     for i in dc:
         dc_dict[i.dcen] = i.dccn
-    eg = Dzhuser.objects.all()
+    eg = DzhUser.objects.all()
     for j in eg:
         engi_dict[j.username] = j.engineer
     db_result = HostList.objects.all()
-    for db in db_result:
-        ip_list.append(db.ip)
-        serv_dict[db.ip] = [db.ip, db.hostname, db.minionid, db.nocn, db.catagorycn, db.pacn, db.dccn, db.engineer]
-    ip_list.sort()
-    for ip in ip_list:
-        info = serv_dict.get(ip)
-        serv_list.append(info)
+    srv_list = filter_data(db_result)
 
     return render(
         request,
@@ -45,58 +36,61 @@ def assetList(request):
         {
             'dc_dict': dc_dict,
             'engi_dict': engi_dict,
-            'serv_list': serv_list
+            'serv_list': srv_list
         }
     )
 
+
 @login_required
-def assetListAPI(request):
-    '''
+@require_GET
+def asset_list_api(request):
+    """
     当前端选择机房与维护人员的时候，通过该接口提交请求并返回数据；
     :param request:
     :return:
-    '''
+    """
     user = request.user.username
+
+    dc = request.GET.get('dcen', '')
+    eg = request.GET.get('engi', '')
+    result = []
+    if dc == 'All_DC' and eg == 'ALL_ENGI':
+        result = HostList.objects.all()
+    elif dc == 'All_DC' and eg != 'ALL_ENGI':
+        eg_result = DzhUser.objects.get(username=eg)
+        result = HostList.objects.filter(engineer=eg_result.engineer)
+    elif dc != 'All_DC' and eg == 'ALL_ENGI':
+        dc_result = DataCenter.objects.get(dcen=dc)
+        result = HostList.objects.filter(dccn=dc_result.dccn)
+    elif dc != 'All_DC' and eg != 'ALL_ENGI':
+        eg_result = DzhUser.objects.get(username=eg)
+        dc_result = DataCenter.objects.get(dcen=dc)
+        result = HostList.objects.filter(dccn=dc_result.dccn, engineer=eg_result.engineer)
+    else:
+        log.error('Unexpected execution here.')
+
+    srv_list = filter_data(result)
+    return JsonResponse(srv_list)
+
+
+def filter_data(models_data):
     ip_list = []
-    serv_list = []
-    serv_dict = {}
+    srv_list = []
+    srv_dict = {}
 
-    if request.method == 'GET':
-        dc = request.GET.get('dcen', '')
-        eg = request.GET.get('engi', '')
-
-        if dc == 'All_DC' and eg == 'ALL_ENGI':
-            result = HostList.objects.all()
-        elif dc == 'All_DC' and eg != 'ALL_ENGI':
-            eg_result = Dzhuser.objects.get(username=eg)
-            result = HostList.objects.filter(engineer=eg_result.engineer)
-        elif dc != 'All_DC' and eg == 'ALL_ENGI':
-            dc_result = DataCenter.objects.get(dcen=dc)
-            result = HostList.objects.filter(dccn=dc_result.dccn)
-        elif dc != 'All_DC' and eg != 'ALL_ENGI':
-            eg_result = Dzhuser.objects.get(username=eg)
-            dc_result = DataCenter.objects.get(dcen=dc)
-            result = HostList.objects.filter(dccn=dc_result.dccn, engineer=eg_result.engineer)
-        else:
-            log.error('Unexpected execution here.')
-
-        for data in result:
-            ip_list.append(data.ip)
-            serv_dict[data.ip] = [
-                data.ip,
-                data.hostname,
-                data.minionid,
-                data.nocn,
-                data.catagorycn,
-                data.pacn,
-                data.dccn,
-                data.engineer
-            ]
-        ip_list.sort()
-        for ip in ip_list:
-            info = serv_dict.get(ip)
-            serv_list.append(info)
-    serv_info_json = json.dumps(serv_list)
-
-    return HttpResponse(serv_info_json, content_type="application/json")
-
+    for i in models_data:
+        ip_list.append(i.ip)
+        srv_dict[i.ip] = [
+            i.ip,
+            i.hostname,
+            i.minionid,
+            i.nocn,
+            i.catagorycn,
+            i.pacn,
+            i.dccn,
+            i.engineer
+        ]
+    ip_list.sort()
+    for ip in ip_list:
+        srv_list.append(srv_dict.get(ip))
+    return srv_list
